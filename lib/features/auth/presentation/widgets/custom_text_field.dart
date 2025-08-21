@@ -1,0 +1,93 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class CustomTextField extends StatefulWidget {
+  final String title;
+  final TextEditingController controller;
+  final IconData icon;
+  final String labelText;
+  final bool obscure;
+  const CustomTextField({
+    required this.controller,
+    required this.title,
+    required this.icon,
+    required this.labelText,
+    this.obscure = false,
+    super.key,
+  });
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscure;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          widget.title,
+          style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        TextFormField(
+          obscureText: _obscureText,
+          controller: widget.controller,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 5,
+            ),
+            prefixIcon: Icon(widget.icon, color: const Color(0xFFC9C9C9)),
+            labelText: widget.labelText,
+            labelStyle: const TextStyle(color: Color(0xFFC9C9C9)),
+            fillColor: const Color(0xFFFCFCFC),
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFD9D8D8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFD9D8D8)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFD9D8D8)),
+            ),
+
+            suffixIcon: widget.obscure
+                ? IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: const Color(0xFFC9C9C9),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  )
+                : null,
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '${widget.title} is required';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+}
