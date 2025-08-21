@@ -5,13 +5,13 @@ class CustomTextField extends StatefulWidget {
   final String title;
   final TextEditingController controller;
   final IconData icon;
-  final String labelText;
+  final String hintText;
   final bool obscure;
   const CustomTextField({
     required this.controller,
     required this.title,
     required this.icon,
-    required this.labelText,
+    required this.hintText,
     this.obscure = false,
     super.key,
   });
@@ -49,8 +49,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
               vertical: 5,
             ),
             prefixIcon: Icon(widget.icon, color: const Color(0xFFC9C9C9)),
-            labelText: widget.labelText,
-            labelStyle: const TextStyle(color: Color(0xFFC9C9C9)),
+            hintText: widget.hintText,
+            hintStyle: const TextStyle(color: Color(0xFFC9C9C9)),
             fillColor: const Color(0xFFFCFCFC),
             filled: true,
             border: OutlineInputBorder(
