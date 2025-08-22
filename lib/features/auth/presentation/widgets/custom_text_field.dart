@@ -39,7 +39,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           widget.title,
           style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 10),
         TextFormField(
           obscureText: _obscureText,
           controller: widget.controller,

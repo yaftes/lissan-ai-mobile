@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,15 +21,16 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 35,
+                  vertical: 10,
+                ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -40,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontStyle: FontStyle.normal,
                           ),
                         ),
+                        const SizedBox(width: 5),
                         SizedBox(
                           height: 70,
                           width: 70,
@@ -49,18 +52,21 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Text(
                       'Ready to continue your English journey?',
-                      style: GoogleFonts.inter(fontWeight: FontWeight.w400),
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey,
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     Text(
                       'Sign in',
                       style: GoogleFonts.inter(
                         color: const Color(0xFF08CC2F),
                         fontWeight: FontWeight.w800,
-                        fontSize: 24,
+                        fontSize: 22,
                       ),
                     ),
-                    const SizedBox(height: 20),
+
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -69,10 +75,11 @@ class _LoginPageState extends State<LoginPage> {
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
+                            color: Colors.grey,
                           ),
                         ),
 
-                        const SizedBox(width: 3),
+                        const SizedBox(width: 5),
                         SizedBox(
                           height: 30,
                           width: 20,
@@ -84,58 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(height: 25),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFCFCFC),
-                          border: BoxBorder.all(color: const Color(0xFF92FFB3)),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: Image.asset('assets/images/google.png'),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Sign In with Google',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: const Color(0xFF08B129),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: Divider(thickness: 1, color: Colors.grey),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            'Or continue with email',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(thickness: 1, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+
                     Form(
                       key: formKey,
                       child: Column(
@@ -190,6 +146,13 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         borderRadius: BorderRadius.circular(12),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.25),
+                            blurRadius: 10,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
                       ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -237,35 +200,105 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(width: 5),
-                        Text(
-                          'Create Account',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF08B129),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignupPage(),
+                            ),
+                          ),
+                          child: Text(
+                            'Create Account',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF08B129),
+                            ),
                           ),
                         ),
                       ],
                     ),
+                    const SizedBox(height: 15),
+                    const Row(
+                      children: [
+                        Expanded(
+                          child: Divider(thickness: 1, color: Colors.grey),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            'Or continue with Google',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                        Expanded(
+                          child: Divider(thickness: 1, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 15,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFCFCFC),
+                          border: BoxBorder.all(color: const Color(0xFF92FFB3)),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: const [
+                            BoxShadow(
+                              offset: Offset(0, 4),
+                              color: Color.fromRGBO(0, 0, 0, 0.25),
+                              blurRadius: 30,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 30,
+                                height: 30,
+                                child: Image.asset('assets/images/google.png'),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Sign In with Google',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  color: const Color(0xFF08B129),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.only(bottom: 15),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildCard(Colors.green, 'Secure Login'),
-                  const SizedBox(width: 10),
-                  _buildCard(Colors.blue, 'Fast Access'),
-                  const SizedBox(width: 10),
-                  _buildCard(Colors.deepPurpleAccent, 'Always Available'),
-                ],
+              const SizedBox(height: 40),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildCard(Colors.green, 'Secure Login'),
+                    const SizedBox(width: 10),
+                    _buildCard(Colors.blue, 'Fast Access'),
+                    const SizedBox(width: 10),
+                    _buildCard(Colors.deepPurpleAccent, 'Always Available'),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

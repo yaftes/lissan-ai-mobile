@@ -1,7 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/login_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
 class SignupPage extends StatefulWidget {
@@ -24,23 +23,26 @@ class _SignupPageState extends State<SignupPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 35),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Text(
                   'Join the Adventure !',
                   style: GoogleFonts.inter(
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.w800,
                     fontStyle: FontStyle.normal,
                   ),
                 ),
                 Text(
                   'start your English mastery journey today',
-                  style: GoogleFonts.inter(fontWeight: FontWeight.w400),
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                  ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 Text(
                   'Create Account',
                   style: GoogleFonts.inter(
@@ -57,7 +59,7 @@ class _SignupPageState extends State<SignupPage> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 20),
 
                 Form(
                   key: formKey,
@@ -70,7 +72,7 @@ class _SignupPageState extends State<SignupPage> {
                         icon: Icons.password,
                         hintText: 'Your Full Name',
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 10),
                       CustomTextField(
                         controller: emailController,
                         title: 'Email Address',
@@ -78,7 +80,7 @@ class _SignupPageState extends State<SignupPage> {
                         hintText: 'your.email@example.com',
                       ),
 
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 10),
                       CustomTextField(
                         controller: passwordController,
                         title: 'Password',
@@ -86,7 +88,7 @@ class _SignupPageState extends State<SignupPage> {
                         hintText: 'Create a strong password',
                         obscure: true,
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 10),
                       CustomTextField(
                         controller: confirmPasswordController,
                         title: 'Confirm Password',
@@ -97,7 +99,7 @@ class _SignupPageState extends State<SignupPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 15),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -119,7 +121,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 15),
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -131,6 +133,13 @@ class _SignupPageState extends State<SignupPage> {
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.25),
+                        blurRadius: 10,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
                   ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -166,28 +175,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'New to LissanAI?',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF757575),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      'Create Account',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF08B129),
-                      ),
-                    ),
-                  ],
-                ),
+
                 const SizedBox(height: 10),
                 const Row(
                   children: [
@@ -209,9 +197,16 @@ class _SignupPageState extends State<SignupPage> {
                       horizontal: 15,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFFFCFCFC),
                       border: BoxBorder.all(color: const Color(0xFF92FFB3)),
-                      borderRadius: BorderRadius.circular(50),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: const [
+                        BoxShadow(
+                          offset: Offset(0, 4),
+                          color: Color.fromRGBO(0, 0, 0, 0.25),
+                          blurRadius: 20,
+                        ),
+                      ],
                     ),
                     child: Center(
                       child: Row(
@@ -227,7 +222,8 @@ class _SignupPageState extends State<SignupPage> {
                             'Continue with Google',
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w500,
-                              fontSize: 14,
+                              fontSize: 16,
+                              color: const Color(0xFF08B129),
                             ),
                           ),
                         ],
@@ -235,17 +231,26 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Already have an account ?'),
                     const SizedBox(width: 5),
-                    Text(
-                      'signin',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF08B129),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                      ),
+                      child: Text(
+                        'Sign in',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF08B129),
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ],
