@@ -4,18 +4,20 @@ abstract class AuthState {}
 
 class InitialState extends AuthState {}
 
-class LoadingState extends AuthState {}
+class AuthLoadingState extends AuthState {}
 
-class ErrorState extends AuthState {
+class AuthErrorState extends AuthState {
   final String message;
-  ErrorState({required this.message});
-}
-
-class LoggedInState extends AuthState {
-  final User user;
-  LoggedInState(this.user);
+  AuthErrorState({required this.message});
 }
 
 class LoggedOutState extends AuthState {}
 
 class SignedUpState extends AuthState {}
+
+class AuthenticatedState extends AuthState {
+  final User user;
+  AuthenticatedState(this.user);
+}
+
+class UnAuthenticatedState extends AuthState {}
