@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:lissan_ai/core/error/exceptions.dart';
 import 'package:lissan_ai/core/error/failure.dart';
 import 'package:lissan_ai/core/network/network_info.dart';
 import 'package:lissan_ai/features/auth/data/datasources/auth_remote_datasource.dart';
@@ -14,11 +15,55 @@ class AuthRepositoryImpl implements AuthRepository {
     required this.remoteDataSource,
     required this.networkInfo,
   });
+  @override
+  Future<Either<Failure, User>> signIn(User user) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final data = await remoteDataSource.signIn(user);
+        return Right(data);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on CacheException catch (e) {
+        return Left(CacheFailure(message: e.message));
+      } catch (e) {
+        return Left(UnexpectedFailure(message: e.toString()));
+      }
+    }
+    return const Left(NetworkFailure(message: 'No internet connection'));
+  }
 
   @override
-  Future<Either<Failure, User>> signIn(User user) {
-    // TODO: implement signIn
-    throw UnimplementedError();
+  Future<Either<Failure, Unit>> signOut() async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.signOut();
+        return const Right(unit);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on CacheException catch (e) {
+        return Left(CacheFailure(message: e.message));
+      } catch (e) {
+        return Left(UnexpectedFailure(message: e.toString()));
+      }
+    }
+    return const Left(NetworkFailure(message: 'No internet connection'));
+  }
+
+  @override
+  Future<Either<Failure, User>> signUp(User user) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final data = await remoteDataSource.signUp(user);
+        return Right(data);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on CacheException catch (e) {
+        return Left(CacheFailure(message: e.message));
+      } catch (e) {
+        return Left(UnexpectedFailure(message: e.toString()));
+      }
+    }
+    return const Left(NetworkFailure(message: 'No internet connection'));
   }
 
   @override
@@ -30,18 +75,6 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> signInWithToken(String token) {
     // TODO: implement signInWithToken
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, Unit>> signOut() {
-    // TODO: implement signOut
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, User>> signUp(User user) {
-    // TODO: implement signUp
     throw UnimplementedError();
   }
 

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
@@ -31,25 +31,30 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Welcome Back!',
-                          style: GoogleFonts.inter(
-                            fontSize: 32,
-                            fontWeight: FontWeight.w800,
-                            fontStyle: FontStyle.normal,
+                    SizedBox(
+                      height: 80,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: [
+                          Center(
+                            child: Text(
+                              'Welcome Back!',
+                              style: GoogleFonts.inter(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        SizedBox(
-                          height: 70,
-                          width: 70,
-                          child: Image.asset('assets/images/celebrate.jpg'),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          SizedBox(
+                            height: 70,
+                            width: 70,
+                            child: Image.asset('assets/images/celebrate.jpg'),
+                          ),
+                        ],
+                      ),
                     ),
+
                     Text(
                       'Ready to continue your English journey?',
                       style: GoogleFonts.inter(

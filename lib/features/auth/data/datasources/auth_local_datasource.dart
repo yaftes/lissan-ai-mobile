@@ -3,9 +3,13 @@ import 'package:lissan_ai/core/utils/constants/auth_constants.dart';
 import 'package:lissan_ai/core/error/exceptions.dart';
 
 abstract class AuthLocalDataSource {
-  Future<String> getToken();
-  Future<void> deleteToken();
-  Future<void> saveToken(String token);
+  Future<String> getAccessToken();
+  Future<String> getRefreshToken();
+  Future<void> deleteTokens();
+  Future<void> saveTokens({
+    required String accessToken,
+    required String refreshToken,
+  });
 }
 
 class UserLocalDataSourceImpl implements AuthLocalDataSource {
@@ -13,33 +17,51 @@ class UserLocalDataSourceImpl implements AuthLocalDataSource {
   UserLocalDataSourceImpl({required this.storage});
 
   @override
-  Future<String> getToken() async {
+  Future<String> getAccessToken() async {
     try {
-      final token = await storage.read(key: AuthConstants.userToken ?? '');
+      final token = await storage.read(key: AuthConstants.accessToken);
       if (token == null) {
-        throw const CacheException(message: 'No token found');
+        throw const CacheException(message: 'No access token found');
       }
       return token;
     } catch (e) {
-      throw CacheException(message: 'Failed to read token: $e');
+      throw CacheException(message: 'Failed to read access token: $e');
     }
   }
 
   @override
-  Future<void> deleteToken() async {
+  Future<String> getRefreshToken() async {
     try {
-      await storage.delete(key: AuthConstants.userToken ?? '');
+      final token = await storage.read(key: AuthConstants.refreshToken);
+      if (token == null) {
+        throw const CacheException(message: 'No refresh token found');
+      }
+      return token;
     } catch (e) {
-      throw CacheException(message: 'Failed to delete token: $e');
+      throw CacheException(message: 'Failed to read refresh token: $e');
     }
   }
 
   @override
-  Future<void> saveToken(String token) async {
+  Future<void> deleteTokens() async {
     try {
-      await storage.write(key: AuthConstants.userToken!, value: token);
+      await storage.delete(key: AuthConstants.accessToken);
+      await storage.delete(key: AuthConstants.refreshToken);
     } catch (e) {
-      throw CacheException(message: 'Failed to save token: $e');
+      throw CacheException(message: 'Failed to delete tokens: $e');
+    }
+  }
+
+  @override
+  Future<void> saveTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    try {
+      await storage.write(key: AuthConstants.accessToken, value: accessToken);
+      await storage.write(key: AuthConstants.refreshToken, value: refreshToken);
+    } catch (e) {
+      throw CacheException(message: 'Failed to save tokens: $e');
     }
   }
 }
