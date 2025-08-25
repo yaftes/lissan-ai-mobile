@@ -3,10 +3,10 @@ import 'package:lissan_ai/core/error/failure.dart';
 import 'package:lissan_ai/features/auth/domain/entities/user.dart';
 import 'package:lissan_ai/features/auth/domain/repositories/auth_repository.dart';
 
-class SignUpUsecase {
+class SignInWithGoogleUsecase {
   final AuthRepository repository;
-  SignUpUsecase({required this.repository});
-  Future<Either<Failure, User>> call(User user) {
-    return repository.signUp(user);
+  SignInWithGoogleUsecase({required this.repository});
+  Future<Either<Failure, User>> call(String token) {
+    return repository.signInWithGoogle(token);
   }
 }

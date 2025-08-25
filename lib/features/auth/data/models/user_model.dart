@@ -1,7 +1,6 @@
 import 'package:lissan_ai/features/auth/domain/entities/user.dart';
 
 class UserModel extends User {
-
   UserModel({
     super.id,
     super.name,
@@ -25,7 +24,7 @@ class UserModel extends User {
       careerGoals: List<String>.from(json['user']['careerGoals'] ?? []),
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'user': {

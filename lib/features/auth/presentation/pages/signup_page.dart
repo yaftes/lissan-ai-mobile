@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/login_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
 class SignupPage extends StatefulWidget {
@@ -241,7 +241,7 @@ class _SignupPageState extends State<SignupPage> {
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
+                          builder: (context) => const SignInPage(),
                         ),
                       ),
                       child: Text(

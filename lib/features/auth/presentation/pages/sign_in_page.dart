@@ -5,14 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignInPage> createState() => _SignInPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
