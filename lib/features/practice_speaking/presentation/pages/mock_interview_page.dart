@@ -4,8 +4,6 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/menu_widget.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/mock_interview_header.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/progress_bar.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
@@ -63,8 +61,8 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
       drawer: const MenuWidget(),
       body: SingleChildScrollView(
         child: Column(
-          spacing: 8,
           children: [
+            const SizedBox(height: 16),
             const Center(
               child: CircleAvatarWidget(
                 radius: 80,
@@ -73,8 +71,17 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                 padd: 12,
               ),
             ),
-            const MockInterviewHeader(),
-            ProgressBar(currentPage: _currentPage, maxPage: _maxPage),
+            const SizedBox(height: 16),
+            Text(
+              '🎯 Mock Interview Practice',
+              style: GoogleFonts.inter(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            _buildProgressBar(),
+            const SizedBox(height: 8),
             QuestionCard(
               question: question,
               onSpeak: () => _speak(question),
@@ -84,23 +91,43 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               currentPage: _currentPage,
               maxPage: _maxPage,
               onPrevious: () {
-                if (_currentPage > 1) {
-                  setState(() => _currentPage--);
-                }
+                if (_currentPage > 1) setState(() => _currentPage--);
               },
               onNext: () {
                 if (_currentPage < _maxPage) {
                   setState(() => _currentPage++);
-                  _speak(question); // autospeak
+                  _speak(question);
                 }
               },
             ),
+            const SizedBox(height: 8),
             const Text(
               '🔥 Keep practicing to maintain your streak!',
               style: TextStyle(fontSize: 16),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildProgressBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Expanded(
+            child: LinearProgressIndicator(
+              value: _currentPage / _maxPage,
+              minHeight: 16,
+              color: const Color(0xFF0FC753),
+              backgroundColor: const Color(0xFFEFF6FF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text('$_currentPage/$_maxPage'),
+        ],
       ),
     );
   }
