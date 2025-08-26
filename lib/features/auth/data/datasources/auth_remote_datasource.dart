@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:lissan_ai/core/error/exceptions.dart';
 import 'package:lissan_ai/core/utils/constants/auth_constants.dart';
@@ -8,14 +7,16 @@ import 'package:lissan_ai/features/auth/data/models/user_model.dart';
 import 'package:lissan_ai/features/auth/domain/entities/user.dart';
 
 abstract class AuthRemoteDataSource {
+  // basic features
   Future<User> signUp(User user);
   Future<User> signIn(User user);
   Future<void> signOut();
+  Future<User> signInWithToken();
 
-  Future<User> signInWithToken(String token);
+  // helper function
+  Future<String> refreshToken(String token);
   Future<User> signInWithGoogle(String token);
   Future<User> signUpWithGoogle();
-  Future<void> deleteAccount();
   Future<void> updateProfile(User user);
   Future<void> forgotPassword();
   Future<String> getToken();
@@ -43,10 +44,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       switch (result.statusCode) {
         case 200:
+          final accessToken = body['access_token'];
+          final refreshToken = body['refresh_token'];
+          final expiresIn = body['expires_in'];
+
+          final expiryTime = DateTime.now()
+              .add(Duration(seconds: expiresIn))
+              .millisecondsSinceEpoch;
+
           await localDataSource.saveTokens(
-            accessToken: body['access_token'],
-            refreshToken: body['refresh_token'],
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiryTime: expiryTime,
           );
+
           return UserModel.fromJson(body['user']);
 
         case 400:
@@ -124,9 +135,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       switch (response.statusCode) {
         case 201:
+          final accessToken = body['access_token'];
+          final refreshToken = body['refresh_token'];
+          final expiresIn = body['expires_in'];
+
+          final expiryTime = DateTime.now()
+              .add(Duration(seconds: expiresIn))
+              .millisecondsSinceEpoch;
+
           await localDataSource.saveTokens(
-            accessToken: body['access_token'],
-            refreshToken: body['refresh_token'],
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiryTime: expiryTime,
           );
 
           return UserModel.fromJson(body['user']);
@@ -155,9 +175,88 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> deleteAccount() {
-    // TODO: implement deleteAccount
-    throw UnimplementedError();
+  Future<User> signInWithToken() async {
+    final String? refTok = await localDataSource.getRefreshToken();
+
+    if (refTok == null || refTok.isEmpty) {
+      throw const UnAuthorizedException(message: 'Please login');
+    }
+
+    String? accessToken = await localDataSource.getAccessToken();
+    final int? expiryTime = await localDataSource.getExpiryTime();
+    final int now = DateTime.now().millisecondsSinceEpoch;
+
+    // Refresh token if access token is missing or expired
+    if (accessToken == null ||
+        accessToken.isEmpty ||
+        (expiryTime != null && now >= expiryTime)) {
+      accessToken = await refreshToken(refTok);
+    }
+
+    // Use access token to fetch user info
+    final url = Uri.parse('${AuthConstants.users}/me');
+    final response = await client.get(
+      url,
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return UserModel.fromJson(data);
+    } else if (response.statusCode == 401) {
+      // Access token expired → refresh and retry once
+      final newAccessToken = await refreshToken(refTok);
+      final retryResponse = await client.get(
+        url,
+        headers: {'Authorization': 'Bearer $newAccessToken'},
+      );
+
+      if (retryResponse.statusCode == 200) {
+        return UserModel.fromJson(jsonDecode(retryResponse.body));
+      } else {
+        throw const UnAuthorizedException(message: 'Please login again');
+      }
+    } else {
+      throw Exception('Failed to fetch user: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<String> refreshToken(String refreshToken) async {
+    try {
+      final url = Uri.parse('${AuthConstants.auth}/refresh');
+      final response = await client.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'refresh_token': refreshToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final newAccessToken = data['accessToken'];
+        final newRefreshToken = data['refreshToken'];
+        final expiresIn = data['expires_in'];
+
+        // Convert expires_in to absolute expiry time (epoch millis)
+        final expiryTime = DateTime.now()
+            .add(Duration(seconds: expiresIn))
+            .millisecondsSinceEpoch;
+
+        // Store both tokens in local data source
+
+        await localDataSource.saveTokens(
+          accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
+          expiryTime: expiryTime,
+        );
+
+        return newAccessToken;
+      } else {
+        throw const UnAuthorizedException(message: 'Refresh token invalid');
+      }
+    } catch (e) {
+      throw Exception('Failed to refresh token: $e');
+    }
   }
 
   @override
@@ -179,12 +278,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<User> signInWithToken(String token) {
-    // TODO: implement signInWithToken
-    throw UnimplementedError();
-  }
-
-  @override
   Future<User> signUpWithGoogle() {
     // TODO: implement signUpWithGoogle
     throw UnimplementedError();
@@ -196,9 +289,3 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     throw UnimplementedError();
   }
 }
-
-/*
-
-
-
-*/

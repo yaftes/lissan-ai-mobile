@@ -6,7 +6,7 @@ import 'package:lissan_ai/features/auth/domain/repositories/auth_repository.dart
 class SignInWithTokenUsecase {
   final AuthRepository repository;
   SignInWithTokenUsecase({required this.repository});
-  Future<Either<Failure, User>> call(String token) {
-    return repository.signInWithToken(token);
+  Future<Either<Failure, User>> call() {
+    return repository.signInWithToken();
   }
 }

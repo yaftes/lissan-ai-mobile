@@ -11,7 +11,7 @@ class AuthErrorState extends AuthState {
   AuthErrorState({required this.message});
 }
 
-class LoggedOutState extends AuthState {}
+class SignedOutState extends AuthState {}
 
 class SignedUpState extends AuthState {}
 

@@ -8,9 +8,10 @@ part 'connectivity_state.dart';
 
 class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
   late final StreamSubscription _subscription;
+  InternetConnection connection;
 
-  ConnectivityBloc() : super(ConnectivityInitial()) {
-    _subscription = InternetConnection().onStatusChange.listen((status) {
+  ConnectivityBloc({required this.connection}) : super(ConnectivityInitial()) {
+    _subscription = connection.onStatusChange.listen((status) {
       add(UpdateConnectivityEvent(status));
     });
 

@@ -6,4 +6,5 @@ class AuthConstants {
   // TOKEN CONSTANTS
   static const String accessToken = 'ACCESS_TOKEN';
   static const String refreshToken = 'REFRESH_TOKEN';
+  static const String expiryTime = 'EXPIRY_TIME';
 }
