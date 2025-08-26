@@ -1,10 +1,8 @@
 class UserAnswer {
-  final String questionId;
-  final String audioPath;
+  final String sessionId;
   final String transcript;
   UserAnswer({
-    required this.questionId,
-    required this.audioPath,
+    required this.sessionId,
     required this.transcript,
   });
 }

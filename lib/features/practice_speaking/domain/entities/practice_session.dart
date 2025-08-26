@@ -5,7 +5,7 @@ import 'package:lissan_ai/features/practice_speaking/domain/entities/user_answer
 enum SessionType { freeSpeaking, mockInterview }
 
 class PracticeSession {
-  final String id;
+  final String sessionId;
   final SessionType type;
   final List<InterviewQuestion> questions;   
   final List<UserAnswer> answers; 
@@ -14,7 +14,7 @@ class PracticeSession {
   final TimeOfDay endTime;
 
   PracticeSession({
-    required this.id,
+    required this.sessionId,
     required this.type,
     this.questions = const [],
     this.answers = const [],
