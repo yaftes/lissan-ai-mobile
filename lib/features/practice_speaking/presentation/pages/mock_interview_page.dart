@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/menu_widget.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/mock_interview_header.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/progress_bar.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
 
 class MockInterviewPage extends StatefulWidget {
   const MockInterviewPage({super.key});
@@ -11,6 +18,34 @@ class MockInterviewPage extends StatefulWidget {
 }
 
 class _MockInterviewPageState extends State<MockInterviewPage> {
+  int _currentPage = 1;
+  final int _maxPage = 5;
+  final String question = 'Tell me about yourself and your background.';
+  late FlutterTts flutterTts;
+
+  @override
+  void initState() {
+    super.initState();
+    flutterTts = FlutterTts();
+    _setTtsSettings();
+  }
+
+  Future<void> _setTtsSettings() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setPitch(1.0);
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.speak(text);
+  }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,56 +59,48 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
             fontSize: 16,
           ),
         ),
-        actions: const [
-          Padding(padding: EdgeInsets.all(15), child: Icon(Icons.search)),
-        ],
       ),
       drawer: const MenuWidget(),
-      body: Column(
-        spacing: 16,
-        children: [
-          const Center(
-            child: CircleAvatarWidget(radius: 80, width: 140, heigth: 140),
-          ),
-          Text(
-            'Mock Interview Practice',
-            style: GoogleFonts.inter(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 24,
+      body: SingleChildScrollView(
+        child: Column(
+          spacing: 8,
+          children: [
+            const Center(
+              child: CircleAvatarWidget(
+                radius: 80,
+                width: 140,
+                height: 140,
+                padd: 12,
+              ),
             ),
-          ),
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: CircleAvatarWidget(radius: 40, width: 70, heigth: 70),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12), // rounded corners
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFD7FFD9), 
-                          Color(0xFFD7E9FF), 
-                        ],
-                      ),
-                    ),
-                    child: const Text(
-                      "Question 1 of 5. Let's practice this together!",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+            const MockInterviewHeader(),
+            ProgressBar(currentPage: _currentPage, maxPage: _maxPage),
+            QuestionCard(
+              question: question,
+              onSpeak: () => _speak(question),
+            ),
+            const RecordButton(),
+            NavigationButtons(
+              currentPage: _currentPage,
+              maxPage: _maxPage,
+              onPrevious: () {
+                if (_currentPage > 1) {
+                  setState(() => _currentPage--);
+                }
+              },
+              onNext: () {
+                if (_currentPage < _maxPage) {
+                  setState(() => _currentPage++);
+                  _speak(question); // autospeak
+                }
+              },
+            ),
+            const Text(
+              '🔥 Keep practicing to maintain your streak!',
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }
