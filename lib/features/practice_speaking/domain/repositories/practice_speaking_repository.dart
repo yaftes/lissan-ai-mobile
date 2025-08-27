@@ -10,4 +10,8 @@ abstract class PracticeSpeakingRepository {
   Future<Either<Failure, PracticeSession>> startPracticeSession(String type);
   Future<Either<Failure, PracticeSession>> endPracticeSession(String sessionId);
   Future<Either<Failure, AnswerFeedback>> submitAndGetAnswer(UserAnswer answer);
+
+  Future<Either<Failure, Stream<String>>> startSpeechRecognition(); // To get real-time updates
+  Future<Either<Failure, String>> stopSpeechRecognitionAndGetResult(); // To get the final text
+  Future<Either<Failure, bool>> checkSpeechRecognitionAvailability(); // To check permissions etc.
 }

@@ -1,0 +1,150 @@
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/entities/interview_question.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/entities/user_answer.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/end_pracice_session_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/get_interview_questions_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/recognize_speech.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/start_practice_session_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/submit_answer_and_get_feedback_usecase.dart';
+
+part 'practice_speaking_event.dart';
+part 'practice_speaking_state.dart';
+
+class PracticeSpeakingBloc
+    extends Bloc<PracticeSpeakingEvent, PracticeSpeakingState> {
+  final StartPracticeSessionUsecase startPracticeSessionUsecase;
+  final EndPraciceSessionUsecase endPracticeSessionUsecase;
+  final GetInterviewQuestionsUsecase getInterviewQuestionsUsecase;
+  final SubmitAnswerAndGetFeedbackUsecase submitAndGetAnswerUsecase;
+  final RecognizeSpeech recognizeSpeech;
+
+  StreamSubscription<String>? _wordsSub;
+  StreamSubscription<String>? _errorSub;
+
+  PracticeSpeakingBloc({
+    required this.startPracticeSessionUsecase,
+    required this.endPracticeSessionUsecase,
+    required this.getInterviewQuestionsUsecase,
+    required this.submitAndGetAnswerUsecase,
+    required this.recognizeSpeech,
+  }) : super(const PracticeSpeakingState()) {
+    // practice session handlers
+    on<StartPracticeSessionEvent>(_onStartSession);
+    on<EndPracticeSessionEvent>(_onEndSession);
+    on<GetInterviewQuestionsEvent>(_onGetQuestions);
+    on<SubmitAnswerEvent>(_onSubmitAnswer);
+
+    // speech recognition handlers
+    on<InitSpeechEvent>(_onInit);
+    on<StartListeningEvent>(_onStartListening);
+    on<StopListeningEvent>(_onStopListening);
+    on<SpeechResultEvent>(_onSpeechResult);
+    on<SpeechErrorEvent>(_onSpeechError);
+  }
+
+  /// ---- Session logic ----
+  Future<void> _onStartSession(
+      StartPracticeSessionEvent event, Emitter<PracticeSpeakingState> emit) async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    final result = await startPracticeSessionUsecase(event.type);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: BlocStatus.error,
+        error: failure.toString(),
+      )),
+      (session) => emit(state.copyWith(
+        status: BlocStatus.sessionStarted,
+        session: session,
+      )),
+    );
+  }
+
+  Future<void> _onEndSession(
+      EndPracticeSessionEvent event, Emitter<PracticeSpeakingState> emit) async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    final result = await endPracticeSessionUsecase(event.sessionId);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: BlocStatus.error,
+        error: failure.toString(),
+      )),
+      (_) => emit(state.copyWith(status: BlocStatus.sessionEnded)),
+    );
+  }
+
+  Future<void> _onGetQuestions(
+      GetInterviewQuestionsEvent event, Emitter<PracticeSpeakingState> emit) async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    final result = await getInterviewQuestionsUsecase(event.type);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: BlocStatus.error,
+        error: failure.toString(),
+      )),
+      (questions) => emit(state.copyWith(
+        status: BlocStatus.questionsLoaded,
+        questions: questions,
+      )),
+    );
+  }
+
+  Future<void> _onSubmitAnswer(
+      SubmitAnswerEvent event, Emitter<PracticeSpeakingState> emit) async {
+    emit(state.copyWith(status: BlocStatus.loading));
+    final result = await submitAndGetAnswerUsecase(event.answer);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        status: BlocStatus.error,
+        error: failure.toString(),
+      )),
+      (feedback) => emit(state.copyWith(
+        status: BlocStatus.feedbackReceived,
+        feedback: feedback,
+      )),
+    );
+  }
+
+  /// ---- Speech Recognition logic ----
+  Future<void> _onInit(
+      InitSpeechEvent event, Emitter<PracticeSpeakingState> emit) async {
+    await recognizeSpeech.init();
+
+    _wordsSub = recognizeSpeech.recognizedWords.listen(
+      (words) => add(SpeechResultEvent(words)),
+    );
+    _errorSub = recognizeSpeech.errors.listen(
+      (error) => add(SpeechErrorEvent(error)),
+    );
+  }
+
+  Future<void> _onStartListening(
+      StartListeningEvent event, Emitter<PracticeSpeakingState> emit) async {
+    await recognizeSpeech.startListening();
+    emit(state.copyWith(isListening: true));
+  }
+
+  Future<void> _onStopListening(
+      StopListeningEvent event, Emitter<PracticeSpeakingState> emit) async {
+    await recognizeSpeech.stopListening();
+    emit(state.copyWith(isListening: false));
+  }
+
+  void _onSpeechResult(
+      SpeechResultEvent event, Emitter<PracticeSpeakingState> emit) {
+    emit(state.copyWith(recognizedText: event.recognizedWords));
+  }
+
+  void _onSpeechError(
+      SpeechErrorEvent event, Emitter<PracticeSpeakingState> emit) {
+    emit(state.copyWith(error: event.message, isListening: false));
+  }
+
+  @override
+  Future<void> close() {
+    _wordsSub?.cancel();
+    _errorSub?.cancel();
+    return super.close();
+  }
+}

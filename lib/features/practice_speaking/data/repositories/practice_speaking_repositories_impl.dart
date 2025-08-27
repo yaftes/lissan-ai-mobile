@@ -76,4 +76,22 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
       return const Left(NetworkFailure(message: 'network error'));
     }
   }
+  
+  @override
+  Future<Either<Failure, bool>> checkSpeechRecognitionAvailability() {
+    // TODO: implement checkSpeechRecognitionAvailability
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Either<Failure, Stream<String>>> startSpeechRecognition() {
+    // TODO: implement startSpeechRecognition
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Either<Failure, String>> stopSpeechRecognitionAndGetResult() {
+    // TODO: implement stopSpeechRecognitionAndGetResult
+    throw UnimplementedError();
+  }
 }

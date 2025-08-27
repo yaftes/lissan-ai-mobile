@@ -3,13 +3,9 @@ import 'package:flutter/material.dart';
 class CircleAvatarWidget extends StatelessWidget {
   final double padd;
   final double radius;
-  final double width;
-  final double height;
   const CircleAvatarWidget({
     super.key,
     required this.radius,
-    required this.width,
-    required this.height,
     required this.padd,
   });
 
@@ -37,11 +33,8 @@ class CircleAvatarWidget extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: ClipOval(
-
             child: Image.asset(
               'assets/images/person.png',
-              width: width,
-              height: height,
               fit: BoxFit.cover,
             ),
           ),
