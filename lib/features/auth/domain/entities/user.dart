@@ -1,4 +1,4 @@
-class User{
+class User {
   final String? id;
   final String? name;
   final String? email;
@@ -8,13 +8,13 @@ class User{
   final List<String>? experiences;
   final List<String>? careerGoals;
   User({
-    this.id, 
-    this.name, 
-    this.email, 
+    this.id,
+    this.name,
+    this.email,
     this.password,
     this.imagePath,
-    this.skills, 
+    this.skills,
     this.experiences,
-    this.careerGoals
-    });
+    this.careerGoals,
+  });
 }
