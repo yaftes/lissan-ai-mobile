@@ -4,7 +4,7 @@ class GetTokenUsecase {
   final AuthRepository repository;
   GetTokenUsecase({required this.repository});
 
-  Future<String?> call() async {
-    return repository.getToken();
+  Future<bool> call() async {
+    return repository.isTokenValid();
   }
 }

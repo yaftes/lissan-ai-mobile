@@ -32,13 +32,13 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: Center(
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               if (state is AuthLoadingState) {
                 return const CircularProgressIndicator();
               }
-
               return const SizedBox.shrink();
             },
           ),

@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lissan_ai/app.dart';
 import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lissan_ai/injection_container.dart';
 
-void main() {
+void main() async {
+  await init();
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => ConnectivityBloc())],
-      child: MyApp(),
+      providers: [
+        BlocProvider(create: (context) => getIt<ConnectivityBloc>()),
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+      ],
+      child: const MyApp(),
     ),
   );
 }

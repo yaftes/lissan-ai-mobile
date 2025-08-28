@@ -19,7 +19,6 @@ abstract class AuthRemoteDataSource {
   Future<User> signUpWithGoogle();
   Future<void> updateProfile(User user);
   Future<void> forgotPassword();
-  Future<String> getToken();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -52,11 +51,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               .add(Duration(seconds: expiresIn))
               .millisecondsSinceEpoch;
 
+          // : SAVE THE TOKEN HERE
+
           await localDataSource.saveTokens(
             accessToken: accessToken,
             refreshToken: refreshToken,
             expiryTime: expiryTime,
           );
+          // : SAVE THE USER HERE
+
+          await localDataSource.saveCachedUser(body['user']);
 
           return UserModel.fromJson(body['user']);
 
@@ -101,6 +105,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (result.statusCode == 200) {
         await localDataSource.deleteTokens();
+        await localDataSource.deleteCachedUser();
       } else if (result.statusCode == 401) {
         throw UnAuthorizedException(message: body['error'] ?? 'Unauthorized');
       } else {
@@ -149,6 +154,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
             expiryTime: expiryTime,
           );
 
+          await localDataSource.saveCachedUser(body['user']);
+
           return UserModel.fromJson(body['user']);
 
         case 400:
@@ -176,98 +183,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<User> signInWithToken() async {
-    final String? refTok = await localDataSource.getRefreshToken();
+    // it's an offline support which helps user to sign in using only there token
 
-    if (refTok == null || refTok.isEmpty) {
-      throw const UnAuthorizedException(message: 'Please login');
+    final user = await localDataSource.getCachedUser();
+    if (user == null) {
+      throw const CacheException(message: 'no user found');
     }
-
-    String? accessToken = await localDataSource.getAccessToken();
-    final int? expiryTime = await localDataSource.getExpiryTime();
-    final int now = DateTime.now().millisecondsSinceEpoch;
-
-    // Refresh token if access token is missing or expired
-    if (accessToken == null ||
-        accessToken.isEmpty ||
-        (expiryTime != null && now >= expiryTime)) {
-      accessToken = await refreshToken(refTok);
-    }
-
-    // Use access token to fetch user info
-    final url = Uri.parse('${AuthConstants.users}/me');
-    final response = await client.get(
-      url,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return UserModel.fromJson(data);
-    } else if (response.statusCode == 401) {
-      // Access token expired → refresh and retry once
-      final newAccessToken = await refreshToken(refTok);
-      final retryResponse = await client.get(
-        url,
-        headers: {'Authorization': 'Bearer $newAccessToken'},
-      );
-
-      if (retryResponse.statusCode == 200) {
-        return UserModel.fromJson(jsonDecode(retryResponse.body));
-      } else {
-        throw const UnAuthorizedException(message: 'Please login again');
-      }
-    } else {
-      throw Exception('Failed to fetch user: ${response.statusCode}');
-    }
+    return UserModel.fromJson(user);
   }
 
   @override
-  Future<String> refreshToken(String refreshToken) async {
-    try {
-      final url = Uri.parse('${AuthConstants.auth}/refresh');
-      final response = await client.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'refresh_token': refreshToken}),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final newAccessToken = data['accessToken'];
-        final newRefreshToken = data['refreshToken'];
-        final expiresIn = data['expires_in'];
-
-        // Convert expires_in to absolute expiry time (epoch millis)
-        final expiryTime = DateTime.now()
-            .add(Duration(seconds: expiresIn))
-            .millisecondsSinceEpoch;
-
-        // Store both tokens in local data source
-
-        await localDataSource.saveTokens(
-          accessToken: newAccessToken,
-          refreshToken: newRefreshToken,
-          expiryTime: expiryTime,
-        );
-
-        return newAccessToken;
-      } else {
-        throw const UnAuthorizedException(message: 'Refresh token invalid');
-      }
-    } catch (e) {
-      throw Exception('Failed to refresh token: $e');
-    }
+  Future<String> refreshToken(String token) {
+    // TODO: implement refreshToken
+    throw UnimplementedError();
   }
 
   @override
   Future<void> forgotPassword() {
     // TODO: implement forgotPassword
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> getToken() {
-    // TODO: implement getToken
     throw UnimplementedError();
   }
 

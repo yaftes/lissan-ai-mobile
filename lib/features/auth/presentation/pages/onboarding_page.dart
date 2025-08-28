@@ -44,11 +44,11 @@ class OnboardingPage extends StatelessWidget {
                         width: 10,
                         color: const Color.fromARGB(255, 209, 207, 207),
                       ),
-                      color: Colors.blue[50],
+                      color: Colors.white,
                       shape: BoxShape.circle,
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/person.png'),
-                        fit: BoxFit.cover,
+                        image: AssetImage('assets/images/avatar.png'),
+                        fit: BoxFit.fitHeight,
                       ),
                     ),
                   ),
@@ -114,7 +114,9 @@ class OnboardingPage extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/sign-in');
+                      },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(

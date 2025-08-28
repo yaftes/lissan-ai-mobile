@@ -25,7 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AppStartedEvent>((event, emit) async {
       emit(AuthLoadingState());
       final token = await getTokenUsecase();
-      if (token == null) {
+      if (!token) {
         emit(UnAuthenticatedState());
       } else {
         add(SignInWithTokenEvent());

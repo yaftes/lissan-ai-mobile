@@ -9,8 +9,8 @@ import 'package:lissan_ai/features/auth/domain/repositories/auth_repository.dart
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final NetworkInfo networkInfo;
   final AuthLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
@@ -71,6 +71,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> signInWithToken() async {
+    // here we don't have to check the internet connection
     if (await networkInfo.isConnected) {
       try {
         final data = await remoteDataSource.signInWithToken();
@@ -87,8 +88,24 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<String?> getToken() {
-    return localDataSource.getRefreshToken();
+  Future<bool> isTokenValid() async {
+    try {
+      final accessToken = await localDataSource.getAccessToken();
+      final expiryTime = await localDataSource.getExpiryTime();
+      final now = DateTime.now().millisecondsSinceEpoch;
+
+      // Token exists and is not expired
+      if (accessToken != null &&
+          accessToken.isNotEmpty &&
+          (expiryTime == null || now < expiryTime)) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      // If any error occurs, consider token invalid
+      return false;
+    }
   }
 
   @override

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
+import 'package:lissan_ai/features/auth/presentation/widgets/custom_button.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:lissan_ai/features/auth/presentation/widgets/google_button.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -46,7 +47,7 @@ class _SignupPageState extends State<SignupPage> {
                 Text(
                   'Create Account',
                   style: GoogleFonts.inter(
-                    color: const Color(0xFF08CC2F),
+                    color: const Color(0xFF112D4F),
                     fontWeight: FontWeight.w800,
                     fontSize: 24,
                   ),
@@ -113,7 +114,7 @@ class _SignupPageState extends State<SignupPage> {
                           children: [
                             TextSpan(
                               text: 'and Privacy Policy',
-                              style: TextStyle(color: Colors.green),
+                              style: TextStyle(color: Color(0xFF112D4F)),
                             ),
                           ],
                         ),
@@ -122,59 +123,7 @@ class _SignupPageState extends State<SignupPage> {
                   ],
                 ),
                 const SizedBox(height: 15),
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF6BDB54),
-                        Color(0xFF38A0AB),
-                        Color(0xFF1848F4),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color.fromRGBO(0, 0, 0, 0.25),
-                        blurRadius: 10,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Create Account',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                CustomButton(onPressed: () {}, text: 'Create Account'),
 
                 const SizedBox(height: 10),
                 const Row(
@@ -188,49 +137,7 @@ class _SignupPageState extends State<SignupPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 15,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFCFCFC),
-                      border: BoxBorder.all(color: const Color(0xFF92FFB3)),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          offset: Offset(0, 4),
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          blurRadius: 20,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: Image.asset('assets/images/google.png'),
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Continue with Google',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: const Color(0xFF08B129),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                GoogleButton(onTap: () {}, text: 'Continue With Google'),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -238,17 +145,12 @@ class _SignupPageState extends State<SignupPage> {
                     const Text('Already have an account ?'),
                     const SizedBox(width: 5),
                     GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignInPage(),
-                        ),
-                      ),
+                      onTap: () => Navigator.pushNamed(context, '/sign-in'),
                       child: Text(
                         'Sign in',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF08B129),
+                          color: const Color(0xFF112D4F),
                           fontSize: 16,
                         ),
                       ),
