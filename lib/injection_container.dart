@@ -30,8 +30,10 @@ Future<void> init() async {
   // Using only the Plus checker (does both checking + listening)
   getIt.registerLazySingleton(() => InternetConnection());
 
-  getIt.registerLazySingleton(() => getIt<SharedPreferences>());
+  final sharedPreferences = await SharedPreferences.getInstance();
 
+  // register the resolved object
+  getIt.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
   // ----------------------
   // ConnectivityBloc
   // ----------------------

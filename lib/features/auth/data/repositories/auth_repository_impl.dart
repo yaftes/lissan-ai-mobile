@@ -71,20 +71,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> signInWithToken() async {
-    // here we don't have to check the internet connection
-    if (await networkInfo.isConnected) {
-      try {
-        final data = await remoteDataSource.signInWithToken();
-        return Right(data);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(message: e.message));
-      } on CacheException catch (e) {
-        return Left(CacheFailure(message: e.message));
-      } catch (e) {
-        return Left(UnexpectedFailure(message: e.toString()));
-      }
+    try {
+      final data = await remoteDataSource.signInWithToken();
+      return Right(data);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return Left(UnexpectedFailure(message: e.toString()));
     }
-    return const Left(NetworkFailure(message: 'No internet connection'));
   }
 
   @override
@@ -94,7 +88,6 @@ class AuthRepositoryImpl implements AuthRepository {
       final expiryTime = await localDataSource.getExpiryTime();
       final now = DateTime.now().millisecondsSinceEpoch;
 
-      // Token exists and is not expired
       if (accessToken != null &&
           accessToken.isNotEmpty &&
           (expiryTime == null || now < expiryTime)) {
@@ -103,44 +96,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return false;
     } catch (e) {
-      // If any error occurs, consider token invalid
       return false;
     }
-  }
-
-  @override
-  Future<Either<Failure, User>> signInWithGoogle(String token) {
-    // TODO: implement signInWithGoogle
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, User>> signUpWithGoogle() {
-    // TODO: implement signUpWithGoogle
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, Unit>> deleteAccount() {
-    // TODO: implement deleteAccount
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, Unit>> forgotPassword() {
-    // TODO: implement forgotPassword
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, Unit>> updateProfile(User user) {
-    // TODO: implement updateProfile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, bool>> hasConnectedToInternet() {
-    // TODO: implement hasConnectedToInternet
-    throw UnimplementedError();
   }
 }

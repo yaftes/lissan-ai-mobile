@@ -11,11 +11,11 @@ class SignInEvent extends AuthEvent {
 class SignInWithTokenEvent extends AuthEvent {}
 
 class SignUpEvent extends AuthEvent {
-  final String fullName;
+  final String name;
   final String email;
   final String password;
   SignUpEvent({
-    required this.fullName,
+    required this.name,
     required this.email,
     required this.password,
   });

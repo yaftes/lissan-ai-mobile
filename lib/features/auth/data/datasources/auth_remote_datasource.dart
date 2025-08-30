@@ -7,18 +7,10 @@ import 'package:lissan_ai/features/auth/data/models/user_model.dart';
 import 'package:lissan_ai/features/auth/domain/entities/user.dart';
 
 abstract class AuthRemoteDataSource {
-  // basic features
   Future<User> signUp(User user);
   Future<User> signIn(User user);
   Future<void> signOut();
   Future<User> signInWithToken();
-
-  // helper function
-  Future<String> refreshToken(String token);
-  Future<User> signInWithGoogle(String token);
-  Future<User> signUpWithGoogle();
-  Future<void> updateProfile(User user);
-  Future<void> forgotPassword();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -36,7 +28,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final url = Uri.parse('${AuthConstants.auth}/login');
       final result = await client.post(
         url,
-        body: {'email': user.email, 'password': user.password},
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': user.email, 'password': user.password}),
       );
 
       final body = jsonDecode(result.body) as Map<String, dynamic>;
@@ -51,14 +44,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
               .add(Duration(seconds: expiresIn))
               .millisecondsSinceEpoch;
 
-          // : SAVE THE TOKEN HERE
-
           await localDataSource.saveTokens(
             accessToken: accessToken,
             refreshToken: refreshToken,
             expiryTime: expiryTime,
           );
-          // : SAVE THE USER HERE
 
           await localDataSource.saveCachedUser(body['user']);
 
@@ -123,102 +113,61 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<User> signUp(User user) async {
-    try {
-      final url = Uri.parse('${AuthConstants.auth}/register');
+    final url = Uri.parse('${AuthConstants.auth}/register');
 
-      final response = await client.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': user.email,
-          'name': user.name,
-          'password': user.password,
-        }),
-      );
+    final response = await client.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': user.email,
+        'name': user.name,
+        'password': user.password,
+      }),
+    );
 
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
 
-      switch (response.statusCode) {
-        case 201:
-          final accessToken = body['access_token'];
-          final refreshToken = body['refresh_token'];
-          final expiresIn = body['expires_in'];
+    switch (response.statusCode) {
+      case 201:
+        final accessToken = body['access_token'];
+        final refreshToken = body['refresh_token'];
+        final expiresIn = body['expires_in'];
 
-          final expiryTime = DateTime.now()
-              .add(Duration(seconds: expiresIn))
-              .millisecondsSinceEpoch;
+        final expiryTime = DateTime.now()
+            .add(Duration(seconds: expiresIn))
+            .millisecondsSinceEpoch;
 
-          await localDataSource.saveTokens(
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            expiryTime: expiryTime,
-          );
+        await localDataSource.saveTokens(
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          expiryTime: expiryTime,
+        );
 
-          await localDataSource.saveCachedUser(body['user']);
+        await localDataSource.saveCachedUser(body['user']);
 
-          return UserModel.fromJson(body['user']);
+        return UserModel.fromJson(body['user']);
 
-        case 400:
-          throw BadRequestException(message: body['error'] ?? 'Bad request');
+      case 400:
+        throw BadRequestException(message: body['error'] ?? 'Bad request');
 
-        case 409:
-          throw ConflictException(
-            message: body['error'] ?? 'User already exists',
-          );
+      case 409:
+        throw ConflictException(
+          message: body['error'] ?? 'User already exists',
+        );
 
-        default:
-          throw ServerException(
-            message: 'Unexpected error: ${response.statusCode}',
-          );
-      }
-    } catch (e) {
-      if (e is BadRequestException ||
-          e is ConflictException ||
-          e is ServerException) {
-        rethrow;
-      }
-      throw Exception('Unexpected error: $e');
+      default:
+        throw ServerException(
+          message: 'Unexpected error: ${response.statusCode}',
+        );
     }
   }
 
   @override
   Future<User> signInWithToken() async {
-    // it's an offline support which helps user to sign in using only there token
-
     final user = await localDataSource.getCachedUser();
     if (user == null) {
       throw const CacheException(message: 'no user found');
     }
     return UserModel.fromJson(user);
-  }
-
-  @override
-  Future<String> refreshToken(String token) {
-    // TODO: implement refreshToken
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> forgotPassword() {
-    // TODO: implement forgotPassword
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<User> signInWithGoogle(String token) {
-    // TODO: implement signInWithGoogle
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<User> signUpWithGoogle() {
-    // TODO: implement signUpWithGoogle
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> updateProfile(User user) {
-    // TODO: implement updateProfile
-    throw UnimplementedError();
   }
 }

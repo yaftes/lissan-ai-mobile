@@ -8,11 +8,4 @@ abstract class AuthRepository {
   Future<Either<Failure, Unit>> signOut();
   Future<Either<Failure, User>> signInWithToken();
   Future<bool> isTokenValid();
-
-  Future<Either<Failure, User>> signInWithGoogle(String token);
-  Future<Either<Failure, User>> signUpWithGoogle();
-
-  Future<Either<Failure, Unit>> deleteAccount();
-  Future<Either<Failure, Unit>> updateProfile(User user);
-  Future<Either<Failure, Unit>> forgotPassword();
 }

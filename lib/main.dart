@@ -6,6 +6,7 @@ import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/injection_container.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await init();
   runApp(
     MultiBlocProvider(
