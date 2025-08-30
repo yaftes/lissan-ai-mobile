@@ -6,7 +6,7 @@ import 'package:lissan_ai/features/writting_assistant/domain/repositories/gramma
 class CheckGrammarUsecase {
   final GrammarRepository repository;
 
-  CheckGrammarUsecase({required this.repository});
+  CheckGrammarUsecase(this.repository);
 
   Future<Either<Failure, GrammarResult>> call(String englishText) {
     return repository.checkGrammar(englishText);
