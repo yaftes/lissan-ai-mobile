@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/submit_modal.dart';
 
 class SpeechPage extends StatelessWidget {
   const SpeechPage({super.key});
@@ -9,7 +10,6 @@ class SpeechPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<PracticeSpeakingBloc>();
 
-    // Initialize speech recognition when page is opened
     bloc.add(InitSpeechEvent());
 
     return Center(
@@ -23,10 +23,13 @@ class SpeechPage extends StatelessWidget {
             onPressed: () {
               if (state.isListening) {
                 bloc.add(StopListeningEvent());
+                CustomPopupDemo(message: state.recognizedText).showCustomPopup(context);
+
               } else {
                 bloc.add(StartListeningEvent());
               }
             },
+
           );
         },
       ),
@@ -34,7 +37,6 @@ class SpeechPage extends StatelessWidget {
   }
 }
 
-/// ✅ RecordButton widget
 class RecordButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isListening;
@@ -64,8 +66,8 @@ class RecordButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(20),
-              backgroundColor: const Color(0xFF3D72B3),
-              shadowColor: const Color(0xFF3D72B3),
+              backgroundColor: isListening ? const Color.fromARGB(255, 167, 38, 88) : const Color(0xFF3D72B3),
+              shadowColor: isListening ? const Color.fromARGB(255, 176, 36, 68) : const Color(0xFF3D72B3),
               elevation: 8,
             ),
             onPressed: onPressed,
@@ -77,7 +79,7 @@ class RecordButton extends StatelessWidget {
                   size: 30,
                 ),
                 Text(
-                  isListening ? 'Stop' : 'Start',
+                  isListening ? 'Recording' : 'Start',
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               ],
@@ -94,7 +96,7 @@ class RecordButton extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 100,
+            height: 50,
             child: SingleChildScrollView(
               child: Text(
                 recognizedText,

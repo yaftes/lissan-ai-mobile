@@ -4,7 +4,8 @@ import 'package:lissan_ai/core/network/network_info.dart';
 import 'package:lissan_ai/features/practice_speaking/data/datasources/practice_speaking_remote_data_source.dart';
 import 'package:lissan_ai/features/practice_speaking/domain/entities/answer_feed_back.dart';
 import 'package:lissan_ai/features/practice_speaking/domain/entities/interview_question.dart';
-import 'package:lissan_ai/features/practice_speaking/domain/entities/practice_session.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/entities/practice_session_result.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/entities/practice_session_start.dart';
 import 'package:lissan_ai/features/practice_speaking/domain/entities/user_answer.dart';
 import 'package:lissan_ai/features/practice_speaking/domain/repositories/practice_speaking_repository.dart';
 
@@ -17,7 +18,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
   });
 
   @override
-  Future<Either<Failure, PracticeSession>> endPracticeSession(
+  Future<Either<Failure, PracticeSessionResult>> endPracticeSession(
     String sessionId,
   ) async {
     final isConnected = await networkInfo.isConnected;
@@ -50,7 +51,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
   }
 
   @override
-  Future<Either<Failure, PracticeSession>> startPracticeSession(String type) async{
+  Future<Either<Failure, PracticeSessionStart>> startPracticeSession(String type) async{
     final isConnected = await networkInfo.isConnected;
     if(isConnected){
       try{
@@ -77,21 +78,5 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
     }
   }
   
-  @override
-  Future<Either<Failure, bool>> checkSpeechRecognitionAvailability() {
-    // TODO: implement checkSpeechRecognitionAvailability
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<Either<Failure, Stream<String>>> startSpeechRecognition() {
-    // TODO: implement startSpeechRecognition
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<Either<Failure, String>> stopSpeechRecognitionAndGetResult() {
-    // TODO: implement stopSpeechRecognitionAndGetResult
-    throw UnimplementedError();
-  }
+
 }

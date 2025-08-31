@@ -13,9 +13,11 @@ class FeedbackPoint {
 class AnswerFeedback {
   final String overallSummary;
   final List<FeedbackPoint> feedbackPoints;
+  final int? scorePercentage;
 
   AnswerFeedback({
     required this.overallSummary,
     required this.feedbackPoints,
+    required this.scorePercentage,
   });
 }

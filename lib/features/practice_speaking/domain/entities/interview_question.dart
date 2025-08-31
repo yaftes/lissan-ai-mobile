@@ -1,5 +1,4 @@
 class InterviewQuestion {
-  final String type;
-  final String text;
-  InterviewQuestion({required this.type, required this.text});
+  final String question;
+  InterviewQuestion({required this.question});
 }

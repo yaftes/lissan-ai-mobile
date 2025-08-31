@@ -3,6 +3,7 @@ part of 'practice_speaking_bloc.dart';
 enum BlocStatus {
   initial,
   loading,
+  questionLoading,
   sessionStarted,
   sessionEnded,
   questionsLoaded,
@@ -13,9 +14,11 @@ enum BlocStatus {
 class PracticeSpeakingState extends Equatable {
   final BlocStatus status;
   final dynamic session; // replace with real Session entity
-  final InterviewQuestion? questions;
+  final InterviewQuestion? currentQuestion;
   final dynamic feedback; // replace with real Feedback entity
   final String? error;
+  final List<InterviewQuestion> questions;
+  final int currentQuestionIndex;
 
   // speech-to-text fields
   final String recognizedText;
@@ -24,34 +27,40 @@ class PracticeSpeakingState extends Equatable {
   const PracticeSpeakingState({
     this.status = BlocStatus.initial,
     this.session,
-    this.questions,
+    this.currentQuestion,
     this.feedback,
     this.error,
     this.recognizedText = '',
     this.isListening = false,
+    this.questions = const [],
+    this.currentQuestionIndex = 0,
   });
 
   PracticeSpeakingState copyWith({
     BlocStatus? status,
     dynamic session,
-    InterviewQuestion? questions,
+    InterviewQuestion? currentQuestion,
     dynamic feedback,
     String? error,
     String? recognizedText,
     bool? isListening,
+    List<InterviewQuestion>? questions,
+    int? currentQuestionIndex,
   }) {
     return PracticeSpeakingState(
       status: status ?? this.status,
       session: session ?? this.session,
-      questions: questions ?? this.questions,
+      currentQuestion: currentQuestion ?? this.currentQuestion,
       feedback: feedback ?? this.feedback,
       error: error,
       recognizedText: recognizedText ?? this.recognizedText,
       isListening: isListening ?? this.isListening,
+      questions: questions ?? this.questions,
+      currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
     );
   }
 
   @override
   List<Object?> get props =>
-      [status, session, questions, feedback, error, recognizedText, isListening];
+      [status, session, currentQuestion, feedback, error, recognizedText, isListening];
 }

@@ -18,13 +18,12 @@ class EndPracticeSessionEvent extends PracticeSpeakingEvent {
 }
 
 class GetInterviewQuestionsEvent extends PracticeSpeakingEvent {
-  final String type;
-  const GetInterviewQuestionsEvent({required this.type});
+  const GetInterviewQuestionsEvent();
 }
 
 class SubmitAnswerEvent extends PracticeSpeakingEvent {
-  final UserAnswer answer;
-  const SubmitAnswerEvent(this.answer);
+  final String answer;
+  const SubmitAnswerEvent({required this.answer});
 
   @override
   List<Object?> get props => [answer];
@@ -34,6 +33,7 @@ class SubmitAnswerEvent extends PracticeSpeakingEvent {
 class InitSpeechEvent extends PracticeSpeakingEvent {}
 class StartListeningEvent extends PracticeSpeakingEvent {}
 class StopListeningEvent extends PracticeSpeakingEvent {}
+
 
 class SpeechResultEvent extends PracticeSpeakingEvent {
   final String recognizedWords;
@@ -48,3 +48,6 @@ class SpeechErrorEvent extends PracticeSpeakingEvent {
   @override
   List<Object?> get props => [message];
 }
+
+class MoveToPreviousQuestionEvent extends PracticeSpeakingEvent {}
+class MoveToNextQuestionEvent extends PracticeSpeakingEvent {}

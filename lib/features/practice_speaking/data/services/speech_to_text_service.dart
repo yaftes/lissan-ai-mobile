@@ -22,9 +22,9 @@ class SpeechToTextService {
         _statusController.add(SpeechRecognizerState.error);
       },
       onStatus: (status) {
-        if (status == "listening") {
+        if (status == 'listening') {
           _statusController.add(SpeechRecognizerState.listening);
-        } else if (status == "done") {
+        } else if (status == 'done') {
           _statusController.add(SpeechRecognizerState.done);
         }
       },
@@ -36,19 +36,19 @@ class SpeechToTextService {
 
   Future<void> startListening() async {
     if (!_isInitialized) {
-      _errorController.add("Speech recognition not initialized.");
+      _errorController.add('Speech recognition not initialized.');
       return;
     }
     await _speechToText.listen(
       onResult: (result) {
         _recognizedWordsController.add(result.recognizedWords);
       },
-      listenFor: const Duration(minutes: 1),
-      pauseFor: const Duration(seconds: 3),
-      partialResults: true,
-      localeId: (await _speechToText.systemLocale())?.localeId ?? "en_US",
+      listenFor: const Duration(minutes: 2),
+      pauseFor: const Duration(seconds: 25),
+      localeId: (await _speechToText.systemLocale())?.localeId ?? 'en_US',
     );
   }
+
 
   Future<void> stopListening() async {
     await _speechToText.stop();

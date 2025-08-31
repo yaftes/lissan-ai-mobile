@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/menu_widget.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
@@ -18,7 +20,6 @@ class MockInterviewPage extends StatefulWidget {
 class _MockInterviewPageState extends State<MockInterviewPage> {
   int _currentPage = 1;
   final int _maxPage = 5;
-  final String question = 'Tell me about yourself and your background.';
   late FlutterTts flutterTts;
 
   @override
@@ -26,6 +27,11 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
     super.initState();
     flutterTts = FlutterTts();
     _setTtsSettings();
+
+    // Start practice session when page opens
+    context.read<PracticeSpeakingBloc>().add(
+      const StartPracticeSessionEvent(type: 'interview'),
+    );
   }
 
   Future<void> _setTtsSettings() async {
@@ -59,67 +65,137 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
         ),
       ),
       drawer: const MenuWidget(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            const Center(
-              child: CircleAvatarWidget(
-                radius: 150,
-                padd: 12,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '🎯 Mock Interview Practice',
-              style: GoogleFonts.inter(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: 
-                  [Color(0xFFDDFFEF), Color(0xFFE2EFFF)]),
-                  borderRadius: const BorderRadius.all(Radius.circular(8),),
-                  border: Border.all(color: const Color(0xFFA7F3D0), width: 1.5 ),
-                ),
-                child: Text('Question $_currentPage of 5. Let\'s practice this together! 💪'),
-              ),
+      body: BlocConsumer<PracticeSpeakingBloc, PracticeSpeakingState>(
+        listenWhen: (previous, current) {
+          return previous.currentQuestion != current.currentQuestion ||
+              previous.status != current.status;
+        },
+        listener: (context, state) {
+          if (state.status == BlocStatus.sessionStarted) {
+            context.read<PracticeSpeakingBloc>().add(
+              const GetInterviewQuestionsEvent(),
+            );
+          }
+          if (state.currentQuestion != null && state.status == BlocStatus.questionsLoaded) {
+          _speak(state.currentQuestion!.question);
+        }
+        },
+        builder: (context, state) {
+          if (state.status == BlocStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            _buildProgressBar(),
-            const SizedBox(height: 8),
-            QuestionCard(
-              question: question,
-              onSpeak: () => _speak(question),
-            ),
-            const SpeechPage(),
-            const SizedBox(height: 16),
-            NavigationButtons(
-              currentPage: _currentPage,
-              maxPage: _maxPage,
-              onPrevious: () {
-                if (_currentPage > 1) setState(() => _currentPage--);
-              },
-              onNext: () {
-                if (_currentPage < _maxPage) {
-                  setState(() => _currentPage++);
-                  _speak(question);
-                }
-              },
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '🔥 Keep practicing to maintain your streak!',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          if (state.status == BlocStatus.error) {
+            return Center(
+              child: Text(
+                state.error ?? 'Something went wrong',
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          if ((state.status == BlocStatus.questionsLoaded ||
+                  state.status == BlocStatus.questionLoading) &&
+              state.currentQuestion != null) {
+            final currentQuestion = state.currentQuestion!.question;
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  const Center(
+                    child: CircleAvatarWidget(radius: 100, padd: 8),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '🎯 Mock Interview Practice',
+                    style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFDDFFEF), Color(0xFFE2EFFF)],
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8)),
+                      border: Border.all(
+                        color: const Color(0xFFA7F3D0),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Text(
+                      'Question $_currentPage of $_maxPage. Let\'s practice this together! 💪',
+                    ),
+                  ),
+                  _buildProgressBar(),
+                  const SizedBox(height: 8),
+                  QuestionCard(
+                    status: state.status == BlocStatus.questionLoading,
+                    question: currentQuestion,
+                    onSpeak: () => _speak(currentQuestion),
+                  ),
+                  const SpeechPage(),
+                  const SizedBox(height: 16),
+                  NavigationButtons(
+                    currentPage: _currentPage,
+                    maxPage: _maxPage,
+                    onPrevious: () {
+                      if (_currentPage > 1) {
+                        setState(() => _currentPage--);
+                      }
+                      if (state.currentQuestionIndex > 0) {
+                        context.read<PracticeSpeakingBloc>().add(
+                          MoveToPreviousQuestionEvent(),
+                        );
+                      // _speak(currentQuestion);
+                      }
+                      
+                    },
+                    onNext: () {
+                      if (_currentPage < _maxPage) {
+                        setState(() => _currentPage++);
+                      }
+                      // fetch next question from backend
+                      if (state.currentQuestionIndex <
+                          state.questions.length - 1) {
+                        // already fetched, just move to next
+                        context.read<PracticeSpeakingBloc>().add(
+                          MoveToNextQuestionEvent(),
+                        );
+                      } else {
+                        // fetch new question
+                        context.read<PracticeSpeakingBloc>().add(
+                          const GetInterviewQuestionsEvent(),
+                        );
+                      }
+                      // _speak(currentQuestion);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    '🔥 Keep practicing to maintain your streak!',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          }
+
+          // Initial empty state
+          return const Center(
+            child: Text('Preparing your practice session...'),
+          );
+        },
       ),
     );
   }

@@ -86,10 +86,10 @@ class AuthRepositoryImpl implements AuthRepository {
     return const Left(NetworkFailure(message: 'No internet connection'));
   }
 
-  @override
-  Future<String?> getToken() {
-    return localDataSource.getRefreshToken();
-  }
+  // @override
+  // Future<String?> getToken() async{
+  //   return await localDataSource.getRefreshToken();
+  // }
 
   @override
   Future<Either<Failure, User>> signInWithGoogle(String token) {
@@ -124,6 +124,12 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> hasConnectedToInternet() {
     // TODO: implement hasConnectedToInternet
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<String> getToken() {
+    // TODO: implement getToken
     throw UnimplementedError();
   }
 }

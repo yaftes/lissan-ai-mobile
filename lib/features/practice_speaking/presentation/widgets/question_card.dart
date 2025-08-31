@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 class QuestionCard extends StatelessWidget {
   final String question;
   final VoidCallback onSpeak;
+  final bool status;
 
   const QuestionCard({
     super.key,
     required this.question,
     required this.onSpeak,
+    required this.status,
   });
+  
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,7 @@ class QuestionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
+          status ? const LinearProgressIndicator() : Text(
             question,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
@@ -90,10 +93,7 @@ class QuestionCard extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: 12, color: textColor),
-      ),
+      child: Text(text, style: TextStyle(fontSize: 12, color: textColor)),
     );
   }
 }

@@ -42,73 +42,100 @@ class PracticeSpeakingBloc
     on<StopListeningEvent>(_onStopListening);
     on<SpeechResultEvent>(_onSpeechResult);
     on<SpeechErrorEvent>(_onSpeechError);
+
+    on<MoveToPreviousQuestionEvent>(_onMoveToPreviousQuestion);
+    on<MoveToNextQuestionEvent>(_onMoveToNextQuestion);
   }
 
   /// ---- Session logic ----
   Future<void> _onStartSession(
-      StartPracticeSessionEvent event, Emitter<PracticeSpeakingState> emit) async {
+    StartPracticeSessionEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     emit(state.copyWith(status: BlocStatus.loading));
     final result = await startPracticeSessionUsecase(event.type);
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: BlocStatus.error,
-        error: failure.toString(),
-      )),
-      (session) => emit(state.copyWith(
-        status: BlocStatus.sessionStarted,
-        session: session,
-      )),
+      (failure) => emit(
+        state.copyWith(status: BlocStatus.error, error: failure.toString()),
+      ),
+      (session) => emit(
+        state.copyWith(status: BlocStatus.sessionStarted, session: session),
+      ),
     );
   }
 
   Future<void> _onEndSession(
-      EndPracticeSessionEvent event, Emitter<PracticeSpeakingState> emit) async {
+    EndPracticeSessionEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     emit(state.copyWith(status: BlocStatus.loading));
     final result = await endPracticeSessionUsecase(event.sessionId);
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: BlocStatus.error,
-        error: failure.toString(),
-      )),
+      (failure) => emit(
+        state.copyWith(status: BlocStatus.error, error: failure.toString()),
+      ),
       (_) => emit(state.copyWith(status: BlocStatus.sessionEnded)),
     );
   }
 
   Future<void> _onGetQuestions(
-      GetInterviewQuestionsEvent event, Emitter<PracticeSpeakingState> emit) async {
-    emit(state.copyWith(status: BlocStatus.loading));
-    final result = await getInterviewQuestionsUsecase(event.type);
+    GetInterviewQuestionsEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
+    emit(state.copyWith(status: BlocStatus.questionLoading));
+
+    if (state.session == null) {
+      emit(
+        state.copyWith(status: BlocStatus.error, error: 'Session not started'),
+      );
+      return;
+    }
+
+    final result = await getInterviewQuestionsUsecase(state.session.sessionId);
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: BlocStatus.error,
-        error: failure.toString(),
-      )),
-      (questions) => emit(state.copyWith(
-        status: BlocStatus.questionsLoaded,
-        questions: questions,
-      )),
+      (failure) => emit(
+        state.copyWith(status: BlocStatus.error, error: failure.toString()),
+      ),
+      (question) {
+        final updateQuestions = List<InterviewQuestion>.from(state.questions)
+          ..add(question);
+        emit(
+          state.copyWith(
+            status: BlocStatus.questionsLoaded,
+            currentQuestion: question, // <-- store single question
+            questions: updateQuestions,
+            currentQuestionIndex: updateQuestions.length - 1,
+          ),
+        );
+      },
     );
   }
 
   Future<void> _onSubmitAnswer(
-      SubmitAnswerEvent event, Emitter<PracticeSpeakingState> emit) async {
+    SubmitAnswerEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     emit(state.copyWith(status: BlocStatus.loading));
-    final result = await submitAndGetAnswerUsecase(event.answer);
+    final userAnswer = UserAnswer(
+      sessionId: state.session.sessionId ?? '',
+      transcript: event.answer,
+    );
+    final result = await submitAndGetAnswerUsecase(userAnswer);
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: BlocStatus.error,
-        error: failure.toString(),
-      )),
-      (feedback) => emit(state.copyWith(
-        status: BlocStatus.feedbackReceived,
-        feedback: feedback,
-      )),
+      (failure) => emit(
+        state.copyWith(status: BlocStatus.error, error: failure.toString()),
+      ),
+      (feedback) => emit(
+        state.copyWith(status: BlocStatus.feedbackReceived, feedback: feedback),
+      ),
     );
   }
 
   /// ---- Speech Recognition logic ----
   Future<void> _onInit(
-      InitSpeechEvent event, Emitter<PracticeSpeakingState> emit) async {
+    InitSpeechEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     await recognizeSpeech.init();
 
     _wordsSub = recognizeSpeech.recognizedWords.listen(
@@ -120,26 +147,61 @@ class PracticeSpeakingBloc
   }
 
   Future<void> _onStartListening(
-      StartListeningEvent event, Emitter<PracticeSpeakingState> emit) async {
+    StartListeningEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     await recognizeSpeech.startListening();
     emit(state.copyWith(isListening: true));
   }
 
   Future<void> _onStopListening(
-      StopListeningEvent event, Emitter<PracticeSpeakingState> emit) async {
+    StopListeningEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) async {
     await recognizeSpeech.stopListening();
     emit(state.copyWith(isListening: false));
+   
   }
 
   void _onSpeechResult(
-      SpeechResultEvent event, Emitter<PracticeSpeakingState> emit) {
+    SpeechResultEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) {
     emit(state.copyWith(recognizedText: event.recognizedWords));
   }
 
   void _onSpeechError(
-      SpeechErrorEvent event, Emitter<PracticeSpeakingState> emit) {
+    SpeechErrorEvent event,
+    Emitter<PracticeSpeakingState> emit,
+  ) {
     emit(state.copyWith(error: event.message, isListening: false));
   }
+  Future<void> _onMoveToPreviousQuestion(
+      MoveToPreviousQuestionEvent event,
+      Emitter<PracticeSpeakingState> emit,
+  ) async {
+    if (state.currentQuestionIndex > 0) {
+      final newIndex = state.currentQuestionIndex - 1;
+      emit(state.copyWith(
+        currentQuestionIndex: newIndex,
+        currentQuestion: state.questions[newIndex],
+      ));
+    }
+  }
+
+  Future<void> _onMoveToNextQuestion(
+      MoveToNextQuestionEvent event,
+      Emitter<PracticeSpeakingState> emit,
+  ) async {
+    if (state.currentQuestionIndex < state.questions.length - 1) {
+      final newIndex = state.currentQuestionIndex + 1;
+      emit(state.copyWith(
+        currentQuestionIndex: newIndex,
+        currentQuestion: state.questions[newIndex],
+      ));
+    }
+  }
+
 
   @override
   Future<void> close() {

@@ -28,6 +28,7 @@ class AnswerFeedbackModel extends AnswerFeedback {
   AnswerFeedbackModel({
     required super.overallSummary,
     required super.feedbackPoints,
+    required super.scorePercentage,
   });
 
   factory AnswerFeedbackModel.fromJson(Map<String, dynamic> json) {
@@ -36,7 +37,9 @@ class AnswerFeedbackModel extends AnswerFeedback {
       feedbackPoints: (json['feedback_points'] as List)
           .map((e) => FeedbackPointModel.fromJson(e))
           .toList(),
+      scorePercentage: json['score_percentage'] as int?,
     );
+    
   }
 
   Map<String, dynamic> toJson() {

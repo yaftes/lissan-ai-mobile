@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/auth_wrapper_page.dart';
+// import 'package:lissan_ai/features/auth/presentation/pages/auth_wrapper_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/home_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/pages/mock_interview_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
-        '/': (context) => const AuthWrapperPage(),
+        '/': (context) => const MockInterviewPage(),
         '/sign-in': (context) => const SignInPage(),
         '/sign-up': (context) => const SignupPage(),
         '/home': (context) => const HomePage(),
