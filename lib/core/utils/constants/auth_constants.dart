@@ -8,6 +8,6 @@ class AuthConstants {
   static const String refreshToken = 'REFRESH_TOKEN';
   static const String expiryTime = 'EXPIRY_TIME';
   // CACHED CONSTANTS
-  
+
   static const String cachedUser = 'CACHED_USER';
 }

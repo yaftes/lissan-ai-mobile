@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/home_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart';
 
@@ -38,8 +38,11 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isFirstTime == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (_isFirstTime == null || !_isFirstTime!) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_isFirstTime == true) {
@@ -51,7 +54,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
         if (state is UnAuthenticatedState) {
           return const SignInPage();
         } else if (state is AuthenticatedState) {
-          return const HomePage();
+          return const Dashboard();
         } else if (state is AuthErrorState) {
           return Scaffold(body: Center(child: Text(state.message)));
         } else if (state is AuthLoadingState) {

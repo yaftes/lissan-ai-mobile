@@ -7,10 +7,12 @@ part 'connectivity_event.dart';
 part 'connectivity_state.dart';
 
 class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
+
   late final StreamSubscription _subscription;
   InternetConnection connection;
 
   ConnectivityBloc({required this.connection}) : super(ConnectivityInitial()) {
+
     _subscription = connection.onStatusChange.listen((status) {
       add(UpdateConnectivityEvent(status));
     });
@@ -22,6 +24,7 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
         emit(ConnectivityDisconnected());
       }
     });
+
   }
 
   @override
@@ -29,4 +32,6 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
     _subscription.cancel();
     return super.close();
   }
+
+  
 }

@@ -9,14 +9,14 @@ import 'package:lissan_ai/features/auth/presentation/widgets/custom_button.dart'
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/google_button.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignUpPageState extends State<SignUpPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
