@@ -21,6 +21,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   int _currentPage = 1;
   final int _maxPage = 5;
   late FlutterTts flutterTts;
+  final selectedMode = 'mock';
 
   @override
   void initState() {
@@ -76,9 +77,10 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               const GetInterviewQuestionsEvent(),
             );
           }
-          if (state.currentQuestion != null && state.status == BlocStatus.questionsLoaded) {
-          _speak(state.currentQuestion!.question);
-        }
+          if (state.currentQuestion != null &&
+              state.status == BlocStatus.questionsLoaded) {
+            _speak(state.currentQuestion!.question);
+          }
         },
         builder: (context, state) {
           if (state.status == BlocStatus.loading) {
@@ -103,10 +105,16 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  const Center(
-                    child: CircleAvatarWidget(radius: 100, padd: 8),
-                  ),
+                  const Center(child: CircleAvatarWidget(radius: 100, padd: 8)),
                   const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    buildCustomButton('Mock Interview', 'mock'),
+                    const SizedBox(width: 8),
+                    buildCustomButton('Free Speeking', 'free')
+                    ],
+                  ),
                   Text(
                     '🎯 Mock Interview Practice',
                     style: GoogleFonts.inter(
@@ -156,12 +164,11 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                         context.read<PracticeSpeakingBloc>().add(
                           MoveToPreviousQuestionEvent(),
                         );
-                      // _speak(currentQuestion);
+                        // _speak(currentQuestion);
                       }
-                      
                     },
                     onNext: () {
-                      if (_currentPage < _maxPage) {
+                      if (_currentPage < _maxPage + 1) {
                         setState(() => _currentPage++);
                       }
                       // fetch next question from backend
@@ -170,6 +177,13 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                         // already fetched, just move to next
                         context.read<PracticeSpeakingBloc>().add(
                           MoveToNextQuestionEvent(),
+                        );
+                      } else if (state.currentQuestionIndex > 5 ||
+                          _currentPage > 5) {
+                        context.read<PracticeSpeakingBloc>().add(
+                          EndPracticeSessionEvent(
+                            sessionId: state.session.sessionId,
+                          ),
                         );
                       } else {
                         // fetch new question
@@ -217,6 +231,20 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
           const SizedBox(width: 8),
           Text('$_currentPage/$_maxPage'),
         ],
+      ),
+    );
+  }
+
+  Widget buildCustomButton(String text, String mode) {
+    final isSelected = selectedMode == mode;
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? const Color(0xFF3D72B3) : Colors.grey[200],
+        foregroundColor: isSelected ? Colors.white : Colors.black
+      ),
+      child: Text(
+        text,
       ),
     );
   }
