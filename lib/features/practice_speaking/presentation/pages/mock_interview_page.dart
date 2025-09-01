@@ -21,7 +21,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   int _currentPage = 1;
   final int _maxPage = 5;
   late FlutterTts flutterTts;
-  final selectedMode = 'mock';
+  String selectedMode = 'mock'; // <-- make it mutable
 
   @override
   void initState() {
@@ -29,7 +29,6 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
     flutterTts = FlutterTts();
     _setTtsSettings();
 
-    // Start practice session when page opens
     context.read<PracticeSpeakingBloc>().add(
       const StartPracticeSessionEvent(type: 'interview'),
     );
@@ -107,110 +106,131 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                   const SizedBox(height: 16),
                   const Center(child: CircleAvatarWidget(radius: 100, padd: 8)),
                   const SizedBox(height: 16),
+                  
+                  // Mode buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                    buildCustomButton('Mock Interview', 'mock'),
-                    const SizedBox(width: 8),
-                    buildCustomButton('Free Speeking', 'free')
+                      buildCustomButton('Mock Interview', 'mock'),
+                      const SizedBox(width: 8),
+                      buildCustomButton('Free Speaking', 'free'),
                     ],
                   ),
-                  Text(
-                    '🎯 Mock Interview Practice',
-                    style: GoogleFonts.inter(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    margin: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFDDFFEF), Color(0xFFE2EFFF)],
-                      ),
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                      border: Border.all(
-                        color: const Color(0xFFA7F3D0),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Text(
-                      'Question $_currentPage of $_maxPage. Let\'s practice this together! 💪',
-                    ),
-                  ),
-                  _buildProgressBar(),
-                  const SizedBox(height: 8),
-                  QuestionCard(
-                    status: state.status == BlocStatus.questionLoading,
-                    question: currentQuestion,
-                    onSpeak: () => _speak(currentQuestion),
-                  ),
-                  const SpeechPage(),
-                  const SizedBox(height: 16),
-                  NavigationButtons(
-                    currentPage: _currentPage,
-                    maxPage: _maxPage,
-                    onPrevious: () {
-                      if (_currentPage > 1) {
-                        setState(() => _currentPage--);
-                      }
-                      if (state.currentQuestionIndex > 0) {
-                        context.read<PracticeSpeakingBloc>().add(
-                          MoveToPreviousQuestionEvent(),
-                        );
-                        // _speak(currentQuestion);
-                      }
-                    },
-                    onNext: () {
-                      if (_currentPage < _maxPage + 1) {
-                        setState(() => _currentPage++);
-                      }
-                      // fetch next question from backend
-                      if (state.currentQuestionIndex <
-                          state.questions.length - 1) {
-                        // already fetched, just move to next
-                        context.read<PracticeSpeakingBloc>().add(
-                          MoveToNextQuestionEvent(),
-                        );
-                      } else if (state.currentQuestionIndex > 5 ||
-                          _currentPage > 5) {
-                        context.read<PracticeSpeakingBloc>().add(
-                          EndPracticeSessionEvent(
-                            sessionId: state.session.sessionId,
-                          ),
-                        );
-                      } else {
-                        // fetch new question
-                        context.read<PracticeSpeakingBloc>().add(
-                          const GetInterviewQuestionsEvent(),
-                        );
-                      }
-                      // _speak(currentQuestion);
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '🔥 Keep practicing to maintain your streak!',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 24),
+
+                  // Call different UI based on selectedMode
+                  if (selectedMode == 'mock')
+                    _buildMockSection(context, state, currentQuestion)
+                  else
+                    _buildFreeSpeakingSection(context),
                 ],
               ),
             );
           }
 
-          // Initial empty state
           return const Center(
             child: Text('Preparing your practice session...'),
           );
         },
       ),
+    );
+  }
+
+  /// Mock Interview Section
+  Widget _buildMockSection(BuildContext context, PracticeSpeakingState state, String currentQuestion) {
+    return Column(
+      children: [
+        Text(
+          '🎯 Mock Interview Practice',
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFDDFFEF), Color(0xFFE2EFFF)],
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            border: Border.all(
+              color: const Color(0xFFA7F3D0),
+              width: 1.5,
+            ),
+          ),
+          child: Text(
+            'Question $_currentPage of $_maxPage. Let\'s practice this together! 💪',
+          ),
+        ),
+        _buildProgressBar(),
+        const SizedBox(height: 8),
+        QuestionCard(
+          status: state.status == BlocStatus.questionLoading,
+          question: currentQuestion,
+          onSpeak: () => _speak(currentQuestion),
+        ),
+        const SpeechPage(),
+        const SizedBox(height: 16),
+        NavigationButtons(
+          currentPage: _currentPage,
+          maxPage: _maxPage,
+          onPrevious: () {
+            if (_currentPage > 1) {
+              setState(() => _currentPage--);
+            }
+            if (state.currentQuestionIndex > 0) {
+              context.read<PracticeSpeakingBloc>().add(
+                MoveToPreviousQuestionEvent(),
+              );
+            }
+          },
+          onNext: () {
+            if (_currentPage < _maxPage + 1) {
+              setState(() => _currentPage++);
+            }
+            if (state.currentQuestionIndex < state.questions.length - 1) {
+              context.read<PracticeSpeakingBloc>().add(
+                MoveToNextQuestionEvent(),
+              );
+            } else if (state.currentQuestionIndex > 5 || _currentPage > 5) {
+              context.read<PracticeSpeakingBloc>().add(
+                EndPracticeSessionEvent(sessionId: state.session.sessionId),
+              );
+            } else {
+              context.read<PracticeSpeakingBloc>().add(
+                const GetInterviewQuestionsEvent(),
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          '🔥 Keep practicing to maintain your streak!',
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  /// Free Speaking Section
+  Widget _buildFreeSpeakingSection(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(height: 16),
+        Text(
+          '🗣️ Free Speaking Mode',
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 30),
+        const SpeechPage(), // Reuse speech recording widget
+      ],
     );
   }
 
@@ -238,14 +258,16 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   Widget buildCustomButton(String text, String mode) {
     final isSelected = selectedMode == mode;
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          selectedMode = mode;
+        });
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: isSelected ? const Color(0xFF3D72B3) : Colors.grey[200],
-        foregroundColor: isSelected ? Colors.white : Colors.black
+        foregroundColor: isSelected ? Colors.white : Colors.black,
       ),
-      child: Text(
-        text,
-      ),
+      child: Text(text),
     );
   }
 }

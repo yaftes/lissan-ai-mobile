@@ -22,14 +22,21 @@ class CustomPopupDemo {
               listener: (context, state) {
                 if (state.status == BlocStatus.feedbackReceived &&
                     state.feedback != null) {
+                  print('check');
+                  print('check');
+                  print('check');
+                  print('check');
+                  print(state.feedback);
                   // Close the recording completed popup first
                   Navigator.of(context).pop();
                   // Show feedback popup
-                  FeedbackPopup.showFeedbackPopup(
-                    context,
-                    state.feedback!,
-                  );
-                }
+                      showDialog(
+                      context: context,
+                      builder: (context) {
+                        return FeedbackPopup(feedback: state.feedback!);
+                      },
+                    );
+                                }
               },
               builder: (context, state) {
                 return Column(
@@ -54,14 +61,17 @@ class CustomPopupDemo {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.greenAccent.withOpacity(0.1),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(12),
+                        ),
                       ),
                       padding: const EdgeInsets.all(12),
                       child: Text(
                         message,
                         style: const TextStyle(
-                            fontSize: 14, color: Colors.black87),
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -86,9 +96,9 @@ class CustomPopupDemo {
                           onPressed: state.status == BlocStatus.loading
                               ? null // disable button while loading
                               : () {
-                                  context
-                                      .read<PracticeSpeakingBloc>()
-                                      .add(SubmitAnswerEvent(answer: message));
+                                  context.read<PracticeSpeakingBloc>().add(
+                                    SubmitAnswerEvent(answer: message),
+                                  );
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
