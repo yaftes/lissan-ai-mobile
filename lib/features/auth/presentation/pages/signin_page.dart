@@ -53,7 +53,13 @@ class _SignInPageState extends State<SignInPage> {
                       ),
                       child: Column(
                         children: [
-                          const Text('Login'),
+                          const Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Color(0xFF112D4F),
+                            ),
+                          ),
                           const SizedBox(height: 25),
                           Form(
                             key: formKey,

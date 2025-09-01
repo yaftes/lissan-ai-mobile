@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/profile_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_tab_view.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/grammar_tab_view.dart';
 
@@ -17,12 +18,7 @@ class _NavigationPageState extends State<NavigationPage> {
     Dashboard(),
     EmailTabView(),
     GrammarTabView(),
-    Center(
-      child: Text(
-        'Profile Page',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    ),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -34,14 +30,25 @@ class _NavigationPageState extends State<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      backgroundColor: Colors.grey[100],
+      body: Stack(
+        children: List.generate(_pages.length, (index) {
+          return Offstage(
+            offstage: _selectedIndex != index,
+            child: TickerMode(
+              enabled: _selectedIndex == index,
+              child: _pages[index],
+            ),
+          );
+        }),
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFF112D4F),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey[400],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF3D72B3),
-        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),

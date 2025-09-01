@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GrammarResultShimmerPage extends StatelessWidget {
   const GrammarResultShimmerPage({super.key});
@@ -113,7 +112,6 @@ class GrammarResultShimmerPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Improved Version Placeholder
             Row(
               children: [
                 _shimmerCircle(size: 26),

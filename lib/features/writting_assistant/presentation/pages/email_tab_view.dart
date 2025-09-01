@@ -33,8 +33,8 @@ class _EmailTabViewState extends State<EmailTabView> {
           ),
 
           bottom: TabBar(
-            indicatorColor: const Color(0xFF3D72B3),
-            labelColor: const Color(0xFF3D72B3),
+            indicatorColor: const Color(0xFF112D4F),
+            labelColor: const Color(0xFF112D4F),
             unselectedLabelColor: Colors.grey[600],
             labelStyle: const TextStyle(
               fontWeight: FontWeight.bold,
