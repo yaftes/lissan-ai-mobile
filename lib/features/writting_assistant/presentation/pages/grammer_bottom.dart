@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/check_grammar_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/practice_example_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class Grammerbottomnav extends StatefulWidget {
+  const Grammerbottomnav({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<Grammerbottomnav> createState() => _GrammerbottomnavState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _GrammerbottomnavState extends State<Grammerbottomnav> {
   int _currentIndex = 0;
   String? _practiceText;
   bool _shouldAuthoCheck = false;
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      GrammarCheckPage(
+      CheckGrammarPage(
         initialText: _practiceText,
         autoCheck: _shouldAuthoCheck,
         onAutoCheckDone: () {

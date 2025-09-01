@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:lissan_ai/core/utils/constants/auth_constants.dart';
+import 'package:lissan_ai/core/utils/constants/writting_constant.dart';
 import 'package:lissan_ai/features/writting_assistant/data/model/grammar_result_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,19 +12,22 @@ abstract class GrammarRemoteDataSources {
 
 class GrammarRemoteDataSourcesimpl implements GrammarRemoteDataSources {
   final http.Client client;
+  final FlutterSecureStorage storage;
 
-  GrammarRemoteDataSourcesimpl({required this.client});
+  GrammarRemoteDataSourcesimpl({
+    required this.storage,
+    required this.client});
   @override
   Future<GrammarResultModel> checkGrammar(String englishText) async {
     final response = await client.post(
       Uri.parse(
-        'https://lissan-ai-backend-dev.onrender.com/api/v1/grammar/check/',
+        writting_constant.baseUrl + writting_constant.checkGrammarEndpoint,
       ),
 
       headers: {
         'Content-type': 'application/json',
         'Authorization':
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjhhOGUyMTk3NWQ1NDQ0MjAzOGYyMDk2Iiwic3ViIjoiNjhhOGUyMTk3NWQ1NDQ0MjAzOGYyMDk2IiwiZXhwIjoxNzU2OTA5NTg5LCJpYXQiOjE3NTYzMDQ3ODl9._sqDZPDK6Wf_nc3q5MDZLyVB3GZz8ag1_C1eHspMujQ',
+            'Bearer ${storage.read(key: AuthConstants.accessToken)}',
       },
       body: jsonEncode({'text': englishText}),
     );

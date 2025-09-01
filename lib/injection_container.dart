@@ -14,6 +14,16 @@ import 'package:lissan_ai/features/auth/domain/usecases/sign_in_with_token_useca
 import 'package:lissan_ai/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lissan_ai/features/writting_assistant/data/datasources/email_remote_data_source.dart';
+import 'package:lissan_ai/features/writting_assistant/data/datasources/grammar_remote_data_sources.dart';
+import 'package:lissan_ai/features/writting_assistant/data/repositories/email_repository_impl.dart';
+import 'package:lissan_ai/features/writting_assistant/data/repositories/grammar_repository_impl.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/email_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/grammar_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/check_grammar_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_draft_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_improve_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -24,7 +34,7 @@ Future<void> init() async {
   // ----------------------
   getIt.registerLazySingleton(() => const FlutterSecureStorage());
 
-  // You can just use the default client unless you need custom SSL handling
+  // You can just use the default client unless you need custom SgetIt handling
   getIt.registerLazySingleton<http.Client>(() => http.Client());
 
   // Using only the Plus checker (does both checking + listening)
@@ -107,4 +117,63 @@ Future<void> init() async {
       signInWithTokenUsecase: getIt<SignInWithTokenUsecase>(),
     ),
   );
+
+
+
+
+
+  // ----------------------
+  //  Writting feature 
+  // ----------------------
+  
+  // Remote Data Sources
+  getIt.registerLazySingleton<EmailRemoteDataSource>(
+    () => EmailRemoteDataSourceImpl(client: getIt()),
+  );
+
+  getIt.registerLazySingleton<GrammarRemoteDataSources>(
+    () => GrammarRemoteDataSourcesimpl(
+      storage: getIt<FlutterSecureStorage>(),
+      client: getIt<http.Client>(),
+    ),
+  );
+
+
+  // Repositories
+  getIt.registerLazySingleton<EmailRepository>(
+    () => EmailRepositoryImpl(
+      remoteDataSource: getIt<EmailRemoteDataSource>(),
+      networkInfo: getIt<NetworkInfo>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<GrammarRepository>(
+    () => GrammarRepositoryImpl(
+      remoteDataSources: getIt<GrammarRemoteDataSources>(),
+      networkInfo: getIt<NetworkInfo>(),
+    ),
+  );
+
+  // Use Cases
+  getIt.registerLazySingleton(
+    () => EmailDraftUsecase(repository: getIt<EmailRepository>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => EmailImproveUsecase(repository: getIt<EmailRepository>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => CheckGrammarUsecase(repository: getIt<GrammarRepository>()),
+  );
+
+  // Bloc
+  getIt.registerFactory(
+    () => WrittingBloc(
+      getEmailDraftUsecase: getIt<EmailDraftUsecase>(),
+      checkGrammarUsecase: getIt<CheckGrammarUsecase>(),
+      improveEmailUsecase: getIt<EmailImproveUsecase>(),
+    ),
+  );
+
 }
