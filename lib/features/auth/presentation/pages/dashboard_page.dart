@@ -85,9 +85,7 @@ class Dashboard extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -99,42 +97,35 @@ class Dashboard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Row(
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF38A0AB), Color(0xFF0A1C5D)],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.show_chart_sharp,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF38A0AB),
-                                    Color(0xFF0A1C5D),
-                                  ],
-                                  begin: Alignment.bottomLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.show_chart_sharp,
-                                color: Colors.black,
+                            Text(
+                              'Your Progress',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(width: 5),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Your Progress',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Track your English learning milestones',
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                              ],
+                            Text(
+                              'Track your English learning milestones',
+                              style: TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
@@ -153,41 +144,9 @@ class Dashboard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               const Text(
                 'What would you like to practice?',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildPracticeCard(
-                    Icons.mic,
-                    'Practice Speaking',
-                    'Improve pronunciation',
-                  ),
-                  _buildPracticeCard(
-                    Icons.email,
-                    'Write an Email',
-                    'Professional writing',
-                  ),
-                  _buildPracticeCard(
-                    Icons.check_circle,
-                    'Check Grammar',
-                    'Fix your mistakes',
-                  ),
-                  _buildPracticeCard(
-                    Icons.menu_book,
-                    'Lessons',
-                    'Learn step by step',
-                  ),
-                ],
               ),
             ],
           ),
@@ -213,50 +172,6 @@ class Dashboard extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
       ],
-    );
-  }
-
-  Widget _buildPracticeCard(IconData icon, String title, String subtitle) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFF6BDB54),
-                  Color(0xFF38A0AB),
-                  Color(0xFF1848F4),
-                ],
-                begin: Alignment.bottomLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Icon(icon, color: Colors.black),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-        ],
-      ),
     );
   }
 }

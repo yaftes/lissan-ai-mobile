@@ -118,26 +118,21 @@ Future<void> init() async {
     ),
   );
 
-
-
-
-
   // ----------------------
-  //  Writting feature 
+  //  Writting feature
   // ----------------------
-  
+
   // Remote Data Sources
   getIt.registerLazySingleton<EmailRemoteDataSource>(
     () => EmailRemoteDataSourceImpl(client: getIt()),
   );
 
   getIt.registerLazySingleton<GrammarRemoteDataSources>(
-    () => GrammarRemoteDataSourcesimpl(
+    () => GrammarRemoteDataSourcesImpl(
       storage: getIt<FlutterSecureStorage>(),
       client: getIt<http.Client>(),
     ),
   );
-
 
   // Repositories
   getIt.registerLazySingleton<EmailRepository>(
@@ -175,5 +170,4 @@ Future<void> init() async {
       improveEmailUsecase: getIt<EmailImproveUsecase>(),
     ),
   );
-
 }

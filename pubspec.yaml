@@ -43,7 +43,8 @@ dependencies:
   bloc_test: ^10.0.0
   flutter_secure_storage: ^9.2.4
   google_fonts: ^6.3.0
-  
+  convex_bottom_bar: ^3.2.0
+  shimmer: ^3.0.0
   
   flutter_native_splash: ^2.4.6
   socket_io_client: ^3.1.2

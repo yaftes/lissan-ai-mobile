@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lissan_ai/app.dart';
 import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_bloc.dart';
-import 'package:lissan_ai/features/writting_assistant/presentation/pages/check_grammar_page.dart';
-import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_bottom_navigation_page.dart';
-import 'package:lissan_ai/features/writting_assistant/presentation/pages/grammer_bottom.dart';
 import 'package:lissan_ai/injection_container.dart';
 
 void main() async {
@@ -20,7 +18,7 @@ void main() async {
       ],
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Grammerbottomnav(),
+        home: MyApp(),
       ),
     ),
   );

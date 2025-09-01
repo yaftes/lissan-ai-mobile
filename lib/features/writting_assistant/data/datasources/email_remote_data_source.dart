@@ -19,8 +19,7 @@ abstract class EmailRemoteDataSource {
   );
 }
 
-
-// REAL API implementation 
+// REAL API implementation
 class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
   final http.Client client;
 
@@ -33,19 +32,17 @@ class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
     String type,
   ) async {
     try {
-      final response = await client
-          .post(
-            Uri.parse(
-              writting_constant.baseUrl + writting_constant.draftEmailEndpoint,
-            ),
-            headers: {'Content-Type': 'application/json'},
-            body: json.encode({
-              'prompt': amharicPrompt,
-              'tone': tone,
-              'template_type': type,
-            }),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await client.post(
+        Uri.parse(
+          writting_constant.baseUrl + writting_constant.draftEmailEndpoint,
+        ),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'prompt': amharicPrompt,
+          'tone': tone,
+          'template_type': type,
+        }),
+      );
 
       if (response.statusCode == 200) {
         return EmailDraftModel.fromJson(json.decode(response.body));
@@ -68,20 +65,17 @@ class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
     String type,
   ) async {
     try {
-      final response = await client
-          .post(
-            Uri.parse(
-              writting_constant.baseUrl +
-                  writting_constant.improveEmailEndpoint,
-            ),
-            headers: {'Content-Type': 'application/json'},
-            body: json.encode({
-              'draft': userEmail,
-              'tone': tone,
-              'template_type': type,
-            }),
-          )
-          .timeout(const Duration(seconds: 10));
+      final response = await client.post(
+        Uri.parse(
+          writting_constant.baseUrl + writting_constant.improveEmailEndpoint,
+        ),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'draft': userEmail,
+          'tone': tone,
+          'template_type': type,
+        }),
+      );
 
       if (response.statusCode == 200) {
         return ImprovedEmailModel.fromJson(json.decode(response.body));

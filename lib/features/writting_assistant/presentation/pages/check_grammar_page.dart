@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
+import 'package:lissan_ai/core/utils/constants/auth_constants.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_bloc.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_event.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_state.dart';
@@ -54,33 +55,6 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
-        child: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Text(
-            'Grammar Check',
-            style: GoogleFonts.inter(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
-          ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 8.0),
-              child: CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage('assets/images/image.png'),
-              ),
-            ),
-          ],
-        ),
-      ),
-
       body: BlocBuilder<ConnectivityBloc, ConnectivityState>(
         builder: (context, state) {
           if (state is ConnectivityConnected) {
@@ -201,6 +175,7 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
                       ),
                       onPressed: _charCount >= 1
                           ? () {
+                              print(AuthConstants.accessToken);
                               context.read<WrittingBloc>().add(
                                 CheckGrammarEvent(
                                   englishText: _controller.text,
@@ -623,7 +598,7 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
               ),
             );
           } else {
-            return Container(child: const Text('no internet connection'));
+            return Image.asset('assets/images/no_internet.png');
           }
         },
       ),
