@@ -244,128 +244,123 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
 
-                  // Corrections section (below Improve button, above output)
+                  // Corrections section 
                   BlocBuilder<WrittingBloc, WrittingState>(
                     builder: (context, state) {
                       if (state is ImproveEmailLoaded &&
                           state.improvedEmail.corrections.isNotEmpty) {
-                        return Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 6,
-                                offset: Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'What we improved',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                        return ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 760),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ), // neutral-200
+                              boxShadow: const [
+                                BoxShadow(
+                                  blurRadius: 24,
+                                  spreadRadius: -4,
+                                  offset: Offset(0, 12),
+                                  color: Color(0x1A000000),
                                 ),
+                                BoxShadow(
+                                  blurRadius: 6,
+                                  spreadRadius: -2,
+                                  offset: Offset(0, 2),
+                                  color: Color(0x14000000),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                20,
+                                20,
+                                20,
+                                16,
                               ),
-                              const SizedBox(height: 8),
-                              ...state.improvedEmail.corrections.map((c) {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 6,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Header
+                                  Text(
+                                    'Suggested Improvements',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.headlineSmall,
                                   ),
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[50],
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: Colors.grey.shade300,
-                                    ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Here are some ways to make your Email better',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                          color: const Color(0xFF6B7280),
+                                        ),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Original',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
+                                  const SizedBox(height: 16),
+
+                                  // Loop corrections
+                                  ...state.improvedEmail.corrections.map((c) {
+                                    return Container(
+                                      margin: const EdgeInsets.only(bottom: 16),
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[50],
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: Colors.grey.shade300,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFFFEBEE),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // ORIGINAL
+                                          _EmphasisBlock(
+                                            title: 'Original:',
+                                            body: c.original,
+                                            titleColor: const Color(0xFFEF4444),
+                                            bgColor: const Color(0xFFFFF1F2),
+                                            borderColor: const Color(
+                                              0xFFFECACA,
+                                            ),
                                           ),
-                                        ),
-                                        child: Text(
-                                          c.original,
-                                          style: const TextStyle(
-                                            color: Color(0xFFD32F2F),
+                                          const SizedBox(height: 12),
+
+                                          // IMPROVED
+                                          _EmphasisBlock(
+                                            title: 'Improved:',
+                                            body: c.corrected,
+                                            titleColor: const Color(0xFF22C55E),
+                                            bgColor: const Color(0xFFF0FDF4),
+                                            borderColor: const Color(
+                                              0xFFBBF7D0,
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      const Text(
-                                        'Correction',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 8,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFE8F5E9),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                                          const SizedBox(height: 12),
+
+                                          // WHY
+                                          _EmphasisBlock(
+                                            title: 'Why:',
+                                            body: c.explanation,
+                                            titleColor: const Color(0xFF2563EB),
+                                            bgColor: const Color(0xFFEFF6FF),
+                                            borderColor: const Color(
+                                              0xFFBFDBFE,
+                                            ),
                                           ),
-                                        ),
-                                        child: Text(
-                                          c.corrected,
-                                          style: const TextStyle(
-                                            color: Color(0xFF2E7D32),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
+                                        ],
                                       ),
-                                      const SizedBox(height: 10),
-                                      const Text(
-                                        'Explanation',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        c.explanation,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }),
-                            ],
+                                    );
+                                  }),
+                                ],
+                              ),
+                            ),
                           ),
                         );
                       }
@@ -512,5 +507,49 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
   void dispose() {
     _emailController.dispose();
     super.dispose();
+  }
+}
+
+// Helper widget
+class _EmphasisBlock extends StatelessWidget {
+  final String title;
+  final String body;
+  final Color titleColor;
+  final Color bgColor;
+  final Color borderColor;
+
+  const _EmphasisBlock({
+    required this.title,
+    required this.body,
+    required this.titleColor,
+    required this.bgColor,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor),
+      ),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.labelMedium!.copyWith(
+              color: titleColor,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(body, style: Theme.of(context).textTheme.bodyMedium),
+        ],
+      ),
+    );
   }
 }
