@@ -38,34 +38,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F9FF), // light blue background
-                      borderRadius: BorderRadius.circular(12), // rounded edges
-                      border: Border.all(
-                        color: const Color(0xFFB2EBF2), // subtle border
-                      ),
-                    ),
-                    child: const Text(
-                      'Great work! Your email looks professional and polite. Ready to send?',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                  // Email input card
-                  Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -105,7 +77,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // // Type selector
                         const Text(
                           'Email Type:',
                           style: TextStyle(
@@ -142,7 +113,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Tone selector
                         const Text(
                           'Tone:',
                           style: TextStyle(
@@ -184,7 +154,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Improve button
                         SizedBox(
                           width: double.infinity,
                           child: BlocBuilder<WrittingBloc, WrittingState>(
@@ -247,7 +216,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
 
                   const SizedBox(height: 24),
 
-                  // Output section
                   BlocBuilder<WrittingBloc, WrittingState>(
                     builder: (context, state) {
                       if (state is ImproveEmailLoading) {
@@ -291,7 +259,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                               ),
                               const SizedBox(height: 12),
 
-                              // Subject (if you want to show it)
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
@@ -300,9 +267,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  state
-                                      .improvedEmail
-                                      .subject, // or state.improvedEmail.subject if you add it
+                                  state.improvedEmail.subject,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -311,7 +276,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                               ),
                               const SizedBox(height: 12),
 
-                              // Improved Body
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(12),
@@ -327,7 +291,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
 
                               const SizedBox(height: 16),
 
-                              // Copy button
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton.icon(
@@ -348,9 +311,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   icon: const Icon(Icons.copy),
                                   label: const Text('Copy Improved Email'),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(
-                                      0xFF009688,
-                                    ), // teal
+                                    backgroundColor: const Color(0xFF009688),
                                     foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
@@ -374,7 +335,18 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
             ),
           );
         } else {
-          return Image.asset('assets/images/no_internet.png');
+          return const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
+                Text(
+                  'Please check your internet connection',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          );
         }
       },
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
 import 'package:lissan_ai/core/utils/constants/auth_constants.dart';
@@ -54,7 +55,7 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: BlocBuilder<ConnectivityBloc, ConnectivityState>(
         builder: (context, state) {
           if (state is ConnectivityConnected) {
@@ -174,7 +175,6 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
                       ),
                       onPressed: _charCount >= 1
                           ? () {
-                              print(AuthConstants.accessToken);
                               context.read<WrittingBloc>().add(
                                 CheckGrammarEvent(
                                   englishText: _controller.text,
@@ -216,7 +216,13 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
                       builder: (context, state) {
                         if (state is GrammarLoading) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: SpinKitDoubleBounce(
+                                color: Colors.grey,
+                                size: 100,
+                              ),
+                            ),
                           );
                         }
                         if (state is GrammarLoaded) {
@@ -597,7 +603,18 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
               ),
             );
           } else {
-            return Image.asset('assets/images/no_internet.png');
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
+                  Text(
+                    'Please check your internet connection',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
+            );
           }
         },
       ),

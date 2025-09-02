@@ -45,6 +45,7 @@ class _NavigationPageState extends State<NavigationPage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF112D4F),
         selectedItemColor: Colors.white,
+        selectedIconTheme: const IconThemeData(size: 30),
         unselectedItemColor: Colors.grey[400],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

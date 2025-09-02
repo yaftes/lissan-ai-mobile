@@ -17,22 +17,12 @@ class _EmailTabViewState extends State<EmailTabView> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
-          titleSpacing: 16,
-          title: const Text(
-            'Email Assistant',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-
-          bottom: TabBar(
+          title: TabBar(
             indicatorColor: const Color(0xFF112D4F),
             labelColor: const Color(0xFF112D4F),
             unselectedLabelColor: Colors.grey[600],
