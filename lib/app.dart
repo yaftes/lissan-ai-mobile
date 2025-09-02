@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => const OnboardingPage(),
         '/email-draft': (context) => const EmailTabView(),
         '/check-grammar': (context) => const GrammarTabView(),
-        '/profile': (context) => const ProfilePage(),
+        '/profile': (context) => const UserProfilePage(),
       },
       initialRoute: '/',
     );

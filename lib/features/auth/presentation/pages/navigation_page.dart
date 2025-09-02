@@ -18,7 +18,7 @@ class _NavigationPageState extends State<NavigationPage> {
     Dashboard(),
     EmailTabView(),
     GrammarTabView(),
-    ProfilePage(),
+    UserProfilePage(),
   ];
 
   void _onItemTapped(int index) {
