@@ -1,45 +1,45 @@
-// animated_audio_blob.dart
+
 
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_free_speech_audio.dart';
 
-// This enum is defined in your main file, but we refer to it here.
-// Make sure it's accessible.
-// enum ConversationState { idle, connected, listening, processing, speaking }
+
+
+
 
 class AnimatedAudioBlob extends StatelessWidget {
   static const _numPoints = 32;
-  static const _minRadius = 45.0; // Base radius of the blob
-  static const _maxRadius = 60.0; // Max radius when "shouting"
-  static const _smoothingFactor = 0.2; // Easing factor for smooth animation
+  static const _minRadius = 45.0; 
+  static const _maxRadius = 60.0; 
+  
 
   final ConversationState state;
-  final double volume; // A value between 0.0 and 1.0
+  final double volume; 
   final VoidCallback onTap;
 
   const AnimatedAudioBlob({
-    Key? key,
+    super.key,
     required this.state,
     required this.volume,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Define blob color based on state
+    
     final Color blobColor = _getColorForState(state);
 
-    // Use a tween to animate the volume smoothly, preventing jerky movements
+    
     final volumeTween = Tween<double>(begin: 0.0, end: volume.clamp(0.0, 1.0));
 
-    // LoopAnimationBuilder will continuously generate subtle background motion
+    
     return LoopAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 2 * pi), // Animate over a full circle
+      tween: Tween(begin: 0.0, end: 2 * pi), 
       duration: const Duration(seconds: 10),
       builder: (context, value, child) {
-        // PlayAnimationBuilder handles the volume-based animation
+        
         return PlayAnimationBuilder<double>(
           tween: volumeTween,
           duration: const Duration(milliseconds: 100),
@@ -67,7 +67,7 @@ class AnimatedAudioBlob extends StatelessWidget {
     );
   }
 
-  // Generate the target radii for the blob points based on a base rotation and volume
+  
   List<double> _generateTargetRadii(
     double animationValue,
     double currentVolume,
@@ -75,9 +75,9 @@ class AnimatedAudioBlob extends StatelessWidget {
     final List<double> radii = [];
     for (int i = 0; i < _numPoints; i++) {
       final double angle = i * (2 * pi / _numPoints);
-      // Base organic movement
+      
       final double organicOffset = sin(angle * 4 + animationValue) * 3;
-      // Volume-based movement
+      
       final double volumeOffset = currentVolume * (_maxRadius - _minRadius);
       radii.add(_minRadius + organicOffset + volumeOffset);
     }
@@ -135,13 +135,13 @@ class BlobPainter extends CustomPainter {
     }
     path.close();
 
-    // Draw shadow
+    
     final shadowPaint = Paint()
       ..color = color.withOpacity(0.5)
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 15);
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
     canvas.drawPath(path, shadowPaint);
 
-    // Draw blob
+    
     final paint = Paint()..color = color;
     canvas.drawPath(path, paint);
   }

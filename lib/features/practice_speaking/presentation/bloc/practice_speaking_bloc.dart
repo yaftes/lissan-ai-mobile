@@ -30,13 +30,13 @@ class PracticeSpeakingBloc
     required this.submitAndGetAnswerUsecase,
     required this.recognizeSpeech,
   }) : super(const PracticeSpeakingState()) {
-    // practice session handlers
+    
     on<StartPracticeSessionEvent>(_onStartSession);
     on<EndPracticeSessionEvent>(_onEndSession);
     on<GetInterviewQuestionsEvent>(_onGetQuestions);
     on<SubmitAnswerEvent>(_onSubmitAnswer);
 
-    // speech recognition handlers
+    
     on<InitSpeechEvent>(_onInit);
     on<StartListeningEvent>(_onStartListening);
     on<StopListeningEvent>(_onStopListening);
@@ -47,7 +47,7 @@ class PracticeSpeakingBloc
     on<MoveToNextQuestionEvent>(_onMoveToNextQuestion);
   }
 
-  /// ---- Session logic ----
+  
   Future<void> _onStartSession(
     StartPracticeSessionEvent event,
     Emitter<PracticeSpeakingState> emit,
@@ -102,7 +102,7 @@ class PracticeSpeakingBloc
         emit(
           state.copyWith(
             status: BlocStatus.questionsLoaded,
-            currentQuestion: question, // <-- store single question
+            currentQuestion: question, 
             questions: updateQuestions,
             currentQuestionIndex: updateQuestions.length - 1,
           ),
@@ -131,7 +131,7 @@ class PracticeSpeakingBloc
     );
   }
 
-  /// ---- Speech Recognition logic ----
+  
   Future<void> _onInit(
     InitSpeechEvent event,
     Emitter<PracticeSpeakingState> emit,

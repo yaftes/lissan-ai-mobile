@@ -13,15 +13,15 @@ enum BlocStatus {
 
 class PracticeSpeakingState extends Equatable {
   final BlocStatus status;
-  final dynamic session; // replace with real Session entity
+  final dynamic session; 
   final InterviewQuestion? currentQuestion;
-  final dynamic feedback; // replace with real Feedback entity
+  final dynamic feedback; 
   final String? error;
   final List<InterviewQuestion> questions;
   final int currentQuestionIndex;
   final dynamic endSessionFeedback;
 
-  // speech-to-text fields
+  
   final String recognizedText;
   final bool isListening;
 

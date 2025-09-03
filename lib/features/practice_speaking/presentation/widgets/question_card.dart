@@ -26,7 +26,7 @@ class QuestionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row with tags + listen
+          
           Row(
             children: [
               _buildTag('General', Colors.grey[200], Colors.black54),

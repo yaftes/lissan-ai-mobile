@@ -31,9 +31,9 @@ class CustomPopupDemo {
                   print('check');
                   print('check');
                   print(state.feedback);
-                  // Close the recording completed popup first
+                  
                   Navigator.of(context).pop();
-                  // Show feedback popup
+                  
                   showDialog(
                     context: context,
                     builder: (context) {
@@ -101,7 +101,7 @@ class CustomPopupDemo {
                         ),
                         ElevatedButton.icon(
                           onPressed: state.status == BlocStatus.loading
-                              ? null // disable button while loading
+                              ? null 
                               : () {
                                   context.read<PracticeSpeakingBloc>().add(
                                     SubmitAnswerEvent(answer: message),

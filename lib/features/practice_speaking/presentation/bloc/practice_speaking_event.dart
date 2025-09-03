@@ -6,7 +6,7 @@ abstract class PracticeSpeakingEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Session events
+
 class StartPracticeSessionEvent extends PracticeSpeakingEvent {
   final String type;
   const StartPracticeSessionEvent({required this.type});
@@ -29,7 +29,7 @@ class SubmitAnswerEvent extends PracticeSpeakingEvent {
   List<Object?> get props => [answer];
 }
 
-// Speech-to-text events
+
 class InitSpeechEvent extends PracticeSpeakingEvent {}
 class StartListeningEvent extends PracticeSpeakingEvent {}
 class StopListeningEvent extends PracticeSpeakingEvent {}

@@ -53,7 +53,7 @@ class EndPage extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // ✅ Strengths
+              
               if (feedback.strengths.isNotEmpty)
                 _buildInfoCard(
                   title: 'Strengths',
@@ -63,7 +63,7 @@ class EndPage extends StatelessWidget {
                   prefix: '✅ ',
                 ),
 
-              // ✅ Weaknesses
+              
               if (feedback.weaknesses.isNotEmpty)
                 _buildInfoCard(
                   title: 'Weaknesses',
@@ -75,7 +75,7 @@ class EndPage extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              // ✅ Button to retry or exit
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -93,7 +93,7 @@ class EndPage extends StatelessWidget {
                     icon: const Icon(Icons.refresh),
                     label: const Text('Retry'),
                     onPressed: () {
-                      Navigator.of(context).pop(); // Go back to retry
+                      Navigator.of(context).pop(); 
                     },
                   ),
                   ElevatedButton.icon(
@@ -110,7 +110,7 @@ class EndPage extends StatelessWidget {
                     icon: const Icon(Icons.exit_to_app),
                     label: const Text('Exit'),
                     onPressed: () {
-                      // Navigator.of(context).popUntil((route) => route.isFirst);
+                      
                     },
                   ),
                 ],
@@ -123,7 +123,7 @@ class EndPage extends StatelessWidget {
     );
   }
 
-  /// ✅ Card builder for strengths/weaknesses
+  
   Widget _buildInfoCard({
     required String title,
     required IconData icon,

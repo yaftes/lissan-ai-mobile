@@ -15,8 +15,6 @@ class LissanAppBar extends StatelessWidget implements PreferredSizeWidget {
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
                 colors: [
                   Color.fromRGBO(17, 45, 79, 1),
                   Color.fromRGBO(61, 114, 179, 1),

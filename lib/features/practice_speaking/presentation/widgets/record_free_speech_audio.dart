@@ -1,9 +1,7 @@
-// Your main file (e.g., record_free_speech_audio.dart)
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math'; // Import for Random
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -11,19 +9,15 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
 
-// --- Import your new blob widget file ---
-import 'animated_audio.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/animated_audio.dart';
 
-// Enum to represent the different states of the conversation UI
 enum ConversationState { idle, connected, listening, processing, speaking }
 
 class RecordFreeSpeechAudio extends StatefulWidget {
   final String websocketUrl;
 
-  const RecordFreeSpeechAudio({Key? key, required this.websocketUrl})
-    : super(key: key);
+  const RecordFreeSpeechAudio({super.key, required this.websocketUrl});
 
   @override
   State<RecordFreeSpeechAudio> createState() => _RecordFreeSpeechAudioState();
@@ -33,28 +27,33 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   WebSocketChannel? _channel;
   final AudioPlayer _audioPlayer = AudioPlayer();
   StreamSubscription? _audioSubscription;
-  StreamSubscription? _amplitudeSubscription; // NEW: For volume animation
+  StreamSubscription? _amplitudeSubscription;
   final AudioRecorder _audioRecorder = AudioRecorder();
 
   ConversationState _currentState = ConversationState.idle;
-  String _statusText = "Tap to Speak";
+  String _statusText = 'Tap to Speak';
   bool _isRecording = false;
-  Timer? _silenceTimer;
 
   double _currentVolume = 0.0;
   Timer? _aiAnimationTimer;
   final Random _random = Random();
+  static const double _silenceThresholdDb = -20.0;
+  static const Duration _maxSessionDuration = Duration(minutes: 3);
+
+  bool _isSessionActive = false;
+  Timer? _sessionTimer;
+  Timer? _silenceTimer;
 
   @override
   void initState() {
     super.initState();
-    _log("--- Widget Initializing ---"); // NEW LOG
+    _log('--- Widget Initializing ---');
     _initializeWebSocket();
   }
 
   @override
   void dispose() {
-    _log("--- Widget Disposing ---"); // NEW LOG
+    _log('--- Widget Disposing ---');
     _silenceTimer?.cancel();
     _aiAnimationTimer?.cancel();
     _audioSubscription?.cancel();
@@ -65,13 +64,12 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   }
 
   void _log(String message) {
-    // This will print to your Flutter debug console.
-    print("[LOG] ${DateTime.now().toIso8601String()}: $message");
+    print('[LOG] ${DateTime.now().toIso8601String()}: $message');
   }
 
   void _setStatus(String text, ConversationState state) {
     if (!mounted) return;
-    _log("Setting status: '$text', State: $state"); // NEW LOG
+    _log("Setting status: '$text', State: $state");
     setState(() {
       _statusText = text;
       _currentState = state;
@@ -82,59 +80,88 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     });
   }
 
+  void _startSession() {
+    if (_isSessionActive) return;
+    _log('--- SESSION STARTED ---');
+    setState(() {
+      _isSessionActive = true;
+    });
+
+    _sessionTimer = Timer(_maxSessionDuration, () {
+      _log('--- SESSION TIMEOUT: 3 minutes reached ---');
+      _endSession(timeout: true);
+    });
+
+    _startRecording();
+  }
+
+  void _endSession({bool timeout = false}) {
+    if (!_isSessionActive) return;
+    _log('--- SESSION ENDED ---');
+
+    _sessionTimer?.cancel();
+    _sessionTimer = null;
+
+    if (_isRecording) {
+      _stopRecording();
+    }
+
+    setState(() {
+      _isSessionActive = false;
+      if (timeout) {
+        _statusText = 'Session ended (3 min timeout)';
+      } else {
+        _statusText = 'Session Ended';
+      }
+      _currentState = ConversationState.connected;
+    });
+  }
+
   Future<void> _initializeWebSocket() async {
-    _log(
-      "Attempting to connect to WebSocket: ${widget.websocketUrl}",
-    ); // NEW LOG
+    _log('Attempting to connect to WebSocket: ${widget.websocketUrl}');
     try {
       _channel = WebSocketChannel.connect(Uri.parse(widget.websocketUrl));
-      _log(
-        "WebSocket connection object created. Listening to stream...",
-      ); // NEW LOG
+      _log('WebSocket connection object created. Listening to stream...');
 
       _channel!.stream.listen(
         (message) {
           if (message is String) {
-            _log("✅ [WebSocket Received TEXT]: $message"); // NEW LOG
-            _setStatus("Processing...", ConversationState.processing);
+            _log('✅ [WebSocket Received TEXT]: $message');
+            _setStatus('Processing...', ConversationState.processing);
           } else if (message is Uint8List) {
             _log(
-              "✅ [WebSocket Received AUDIO]: ${message.lengthInBytes} bytes",
-            ); // NEW LOG
+              '✅ [WebSocket Received AUDIO]: ${message.lengthInBytes} bytes',
+            );
             _playAudio(message);
           } else {
-            _log(
-              "✅ [WebSocket Received UNKNOWN TYPE]: ${message.runtimeType}",
-            ); // NEW LOG
+            _log('✅ [WebSocket Received UNKNOWN TYPE]: ${message.runtimeType}');
           }
         },
         onDone: () {
           _log(
-            "❌ [WebSocket onDone]: Connection closed by server. Code: ${_channel?.closeCode}, Reason: ${_channel?.closeReason}",
-          ); // NEW LOG
-          _setStatus("Disconnected. Tap to reconnect.", ConversationState.idle);
+            '❌ [WebSocket onDone]: Connection closed by server. Code: ${_channel?.closeCode}, Reason: ${_channel?.closeReason}',
+          );
+          _setStatus('Disconnected. Tap to reconnect.', ConversationState.idle);
           _stopRecording();
-          _channel = null; // Set channel to null to allow reconnection
+          _channel = null;
         },
         onError: (error) {
-          _log("❌ [WebSocket onError]: $error"); // NEW LOG
-          _setStatus("Error. Tap to reconnect.", ConversationState.idle);
+          _log('❌ [WebSocket onError]: $error');
+          _setStatus('Error. Tap to reconnect.', ConversationState.idle);
           _stopRecording();
           _channel = null;
         },
       );
-      _setStatus("Tap to Speak", ConversationState.connected);
-      _log("✅ WebSocket stream listener is active."); // NEW LOG
+      _setStatus('Tap to Speak', ConversationState.connected);
+      _log('✅ WebSocket stream listener is active.');
     } catch (e) {
-      _log("❌ [WebSocket EXCEPTION]: Failed to connect: $e"); // NEW LOG
-      _setStatus("Connection Error", ConversationState.idle);
+      _log('❌ [WebSocket EXCEPTION]: Failed to connect: $e');
+      _setStatus('Connection Error', ConversationState.idle);
     }
   }
 
   Future<void> _playAudio(Uint8List audioBytes) async {
-    _setStatus("AI Speaking...", ConversationState.speaking);
-
-    // Start fake animation for AI speaking
+    _setStatus('AI Speaking...', ConversationState.speaking);
     _aiAnimationTimer?.cancel();
     _aiAnimationTimer = Timer.periodic(const Duration(milliseconds: 100), (
       timer,
@@ -149,159 +176,144 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     });
 
     try {
-      // --- THIS IS THE FIX ---
-      // Instead of writing to a file, we set the audio source directly from the byte array.
-      // This avoids the Android Cleartext HTTP error.
       await _audioPlayer.setAudioSource(BytesAudioSource(audioBytes));
       _audioPlayer.play();
-      _log("Playing AI audio from memory...");
+      _log('Playing AI audio from memory...');
 
       _audioPlayer.playerStateStream.listen((playerState) {
         if (playerState.processingState == ProcessingState.completed) {
-          _log("AI finished speaking. Ready for next turn.");
           _aiAnimationTimer?.cancel();
-          // Reset the player so it doesn't replay the old audio on the next run
           _audioPlayer.stop();
-          _setStatus("Tap to Speak", ConversationState.connected);
+
+          if (_isSessionActive) {
+            _log('AI finished, starting next turn automatically.');
+            _startRecording();
+          } else {
+            _log(
+              'AI finished, but session is now inactive. Returning to idle.',
+            );
+            _setStatus('Session Ended', ConversationState.connected);
+          }
         }
       });
     } catch (e) {
-      _log("Error playing audio: $e");
+      _log('Error playing audio: $e');
       _aiAnimationTimer?.cancel();
-      _setStatus("Audio Error", ConversationState.connected);
+      _setStatus('Audio Error', ConversationState.connected);
     }
   }
 
   Future<void> _startRecording() async {
-    _log("Attempting to start recording...");
-    if (_isRecording) {
-      _log("...already recording. Aborting.");
-      return;
-    }
-    if (_channel == null || _channel!.sink == null) {
-      _log("...channel is null. Attempting to reconnect before recording.");
+    _log('Attempting to start recording...');
+    if (_isRecording) return;
+    if (_channel == null) {
+      _log('...channel is null, trying to reconnect.');
       await _initializeWebSocket();
       if (_channel == null) {
-        _log("...reconnection failed. Aborting recording.");
+        _log('...reconnection failed. Aborting recording.');
         return;
       }
     }
 
-    _log("...checking microphone permission.");
     if (await Permission.microphone.request().isDenied) {
-      _log("...permission denied. Aborting.");
+      _log('...permission denied. Aborting.');
       return;
     }
 
     try {
       if (await _audioRecorder.hasPermission()) {
-        _log("...permission granted. Starting stream from recorder.");
+        _log('...permission granted. Starting stream from recorder.');
         _isRecording = true;
-        _setStatus("Listening...", ConversationState.listening);
+        _setStatus('Listening...', ConversationState.listening);
 
-        // --- THE MAIN FIX IS HERE ---
-        // Change the encoder from pcm16bits to a standard format like aacLc.
         final audioStream = await _audioRecorder.startStream(
-          const RecordConfig(
-            encoder: AudioEncoder.aacLc, // CHANGED FROM pcm16bits
-            sampleRate: 16000,
-            numChannels: 1,
-            bitRate: 48000, // A reasonable bitrate for AAC
-          ),
+          const RecordConfig(sampleRate: 16000, numChannels: 1, bitRate: 48000),
         );
 
-        // --- NEW: Use the built-in amplitude stream for visualization ---
+        _audioSubscription = audioStream.listen((audioChunk) {
+          if (_channel?.sink != null && _isRecording) {
+            _channel!.sink.add(audioChunk);
+          }
+        }, onError: (err) => _stopRecording());
+
         _amplitudeSubscription = _audioRecorder
-            .onAmplitudeChanged(const Duration(milliseconds: 100))
+            .onAmplitudeChanged(const Duration(milliseconds: 200))
             .listen((amp) {
-              // The amplitude is in dBFS (decibels relative to full scale).
-              // It's typically negative, from -160 (silence) to 0 (max).
-              // We'll convert it to a 0.0 to 1.0 scale for the blob.
-              final minDb = -60.0; // A reasonable silence threshold
-              final maxDb = 0.0;
-              // Clamp the value and normalize it
+              final volume = amp.current;
+
+              _log(
+                '🎤 Amplitude: ${volume.toStringAsFixed(2)} dB (Threshold is $_silenceThresholdDb dB)',
+              );
+
+              final minDb = -60.0;
               final normalized =
-                  (amp.current.clamp(minDb, maxDb) - minDb) / (maxDb - minDb);
-              if (mounted) {
-                setState(() {
-                  _currentVolume = normalized;
-                });
+                  (volume.clamp(minDb, 0.0) - minDb) / (0.0 - minDb);
+              if (mounted) setState(() => _currentVolume = normalized);
+
+              if (volume > _silenceThresholdDb) {
+                _log('... Volume is ABOVE threshold. Resetting silence timer.');
+                _resetSilenceTimer();
               }
             });
 
-        _audioSubscription = audioStream.listen(
-          (audioChunk) {
-            if (_channel?.sink != null && _isRecording) {
-              _log(
-                "🎤 -> 🚀 Sending audio chunk: ${audioChunk.lengthInBytes} bytes (AAC)",
-              );
-              _channel!.sink.add(audioChunk);
-
-              // We no longer calculate RMS here.
-              _resetSilenceTimer();
-            }
-          },
-          onError: (err) {
-            _log("❌ Audio stream error: $err");
-            _stopRecording();
-          },
-          onDone: () {
-            _log("Audio stream finished.");
-          },
-        );
         _startSilenceTimer();
       }
     } catch (e) {
-      _log("❌ Error starting recording: $e");
-      _setStatus("Recording Error", ConversationState.connected);
+      _log('❌ Error starting recording: $e');
+      _setStatus('Recording Error', ConversationState.connected);
       _isRecording = false;
     }
   }
 
   void _stopRecording() {
-    _log("Attempting to stop recording...");
+    _log('Attempting to stop recording TURN...');
     if (!_isRecording) {
-      _log("...not recording. Aborting.");
       return;
     }
     _isRecording = false;
     _audioRecorder.stop();
     _audioSubscription?.cancel();
+    _amplitudeSubscription?.cancel();
     _silenceTimer?.cancel();
-    _amplitudeSubscription?.cancel(); // NEW: Cancel the amplitude listener
     _silenceTimer = null;
-    _setStatus("Tap to Speak", ConversationState.connected);
-    _log("✅ Stopped listening.");
+
+    if (_isSessionActive) {
+      _setStatus('Processing...', ConversationState.processing);
+    }
+    _log('✅ Stopped listening TURN.');
   }
 
   void _sendEndOfSpeechSignal() {
-    _log(
-      "🤫 Silence/Manual stop detected. Sending 'end_of_speech'.",
-    ); // NEW LOG
+    _log("🤫 Silence/Manual stop detected. Sending 'end_of_speech'.");
     if (_channel?.sink != null) {
       _channel!.sink.add(jsonEncode({'type': 'end_of_speech'}));
-      _log("...signal sent."); // NEW LOG
+      _log('...signal sent.');
     } else {
-      _log("...could not send signal, channel is null."); // NEW LOG
+      _log('...could not send signal, channel is null.');
     }
     _stopRecording();
   }
 
   void _startSilenceTimer() {
     _silenceTimer?.cancel();
-    _log("🤫 Starting 1.5s silence timer..."); // NEW LOG
+    _log('🤫 Starting 1.5s silence timer...');
     _silenceTimer = Timer(const Duration(milliseconds: 1500), () {
       if (_isRecording) {
+        _log('🤫 Silence detected by initial timer.');
         _sendEndOfSpeechSignal();
       }
     });
   }
 
   void _resetSilenceTimer() {
-    if (_isRecording) {
-      _silenceTimer?.cancel();
-      _startSilenceTimer();
-    }
+    _silenceTimer?.cancel();
+
+    _silenceTimer = Timer(const Duration(milliseconds: 2000), () {
+      if (_isRecording) {
+        _log('🤫 Silence detected by timer.');
+        _sendEndOfSpeechSignal();
+      }
+    });
   }
 
   @override
@@ -316,7 +328,6 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
         ),
         const SizedBox(height: 64),
 
-        // --- REPLACEMENT WIDGET ---
         AnimatedAudioBlob(
           state: _currentState,
           volume: _currentVolume,
@@ -324,31 +335,21 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
             if (_currentState == ConversationState.connected ||
                 _currentState == ConversationState.idle) {
               if (_channel == null) {
-                _initializeWebSocket(); // Attempt to reconnect if disconnected
+                _initializeWebSocket();
               }
               _startRecording();
             } else if (_currentState == ConversationState.listening) {
-              _sendEndOfSpeechSignal(); // Manual stop
+              _sendEndOfSpeechSignal();
             }
           },
         ),
 
-        // --- END REPLACEMENT ---
         const SizedBox(height: 20),
-        // This button is now redundant as tapping the blob stops the recording.
-        // You can keep it if you want an explicit stop button.
-        // if (_isRecording)
-        //   ElevatedButton(
-        //     onPressed: _sendEndOfSpeechSignal,
-        //     style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-        //     child: const Text('Stop', style: TextStyle(color: Colors.white)),
-        //   ),
       ],
     );
   }
 }
 
-// A simple AudioSource to play bytes with just_audio
 class BytesAudioSource extends StreamAudioSource {
   final Uint8List _buffer;
 
@@ -363,8 +364,8 @@ class BytesAudioSource extends StreamAudioSource {
       contentLength: endVal - startVal,
       offset: startVal,
       stream: Stream.value(_buffer.sublist(startVal, endVal)),
-      // The content type your server sends. 'audio/mpeg' for MP3, 'audio/aac' for AAC, etc.
-      contentType: 'audio/mpeg',
+
+      contentType: 'audio/aac',
     );
   }
 }
