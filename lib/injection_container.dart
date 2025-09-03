@@ -61,12 +61,6 @@ Future<void> init() async {
     ),
   );
 
-  getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(
-      client: getIt<http.Client>(),
-      localDataSource: getIt<AuthLocalDataSource>(),
-    ),
-  );
 
   // ----------------------
   // Network info

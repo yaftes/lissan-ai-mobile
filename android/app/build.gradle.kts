@@ -1,13 +1,13 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.lissan_ai"
-    compileSdk = flutter.compileSdkVersion
+
+    compileSdk = (project.findProperty("flutter.compileSdkVersion") ?: 36).toString().toInt()
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -20,20 +20,17 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.lissan_ai"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+
+        minSdk = (project.findProperty("flutter.minSdkVersion") ?: 24).toString().toInt()
+        targetSdk = (project.findProperty("flutter.targetSdkVersion") ?: 36).toString().toInt()
+
+        versionCode = (project.findProperty("flutter.versionCode") ?: 1).toString().toInt()
+        versionName = (project.findProperty("flutter.versionName") ?: "1.0.0").toString()
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
