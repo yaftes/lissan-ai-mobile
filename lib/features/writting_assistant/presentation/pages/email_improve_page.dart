@@ -37,50 +37,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(
-                    left: 16, // horizontal (left)
-                    right: 16, // horizontal (right)
-                    bottom: 12,
-                  ),
-
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F9FF), // light blue background
-                    borderRadius: BorderRadius.circular(12), // rounded edges
-                    border: Border.all(
-                      color: const Color(0xFFB2EBF2), // subtle border
-                    ),
-                  ),
-                  child: const Text(
-                    'Great work! Your email looks professional and polite. Ready to send?',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-
-                const Text(
-                  'Your Email:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff112d4f),
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                const Text(
-                  'Paste your Email here and we\'ll help improve it',
-                  style: TextStyle(fontSize: 16, color: Color(0xFF666666)),
-                ),
-                const SizedBox(height: 16),
 
                 // text field
                 TextField(
@@ -95,27 +51,12 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                       horizontal: 16,
                     ),
                     filled: true, // 👈 Enable background color
-                    fillColor: Colors.grey[200], // 👈 Background color
+                    fillColor: const Color(0xFFF9F9F9), // 👈 Background color
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Colors.blueAccent,
-                        width: 1.5,
-                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade400,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xff112d4f),
-                        width: 2,
-                      ),
                     ),
                   ),
                 ),
