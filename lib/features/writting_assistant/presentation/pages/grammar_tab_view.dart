@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/check_grammar_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/practice_example_page.dart';
 
@@ -21,31 +20,15 @@ class _GrammarTabViewState extends State<GrammarTabView> {
       child: Builder(
         builder: (context) {
           final tabController = DefaultTabController.of(context)!;
-
           tabController.addListener(() {
             if (mounted) setState(() {});
           });
-
-          final String currentTabTitle = tabController.index == 0
-              ? 'Check Grammar'
-              : 'Practice';
 
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
               backgroundColor: Colors.white,
-              elevation: 1,
-              centerTitle: true,
-              title: Text(
-                currentTabTitle,
-                style: GoogleFonts.inter(
-                  color: const Color(0xFF112D4F),
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              bottom: const TabBar(
+              title: const TabBar(
                 indicatorColor: Color(0xFF112D4F),
                 labelColor: Color(0xFF112D4F),
                 unselectedLabelColor: Colors.grey,

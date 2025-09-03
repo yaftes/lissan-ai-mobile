@@ -449,7 +449,18 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
             ),
           );
         } else {
-          return Image.asset('assets/images/no_internet.png');
+          return const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
+                Text(
+                  'Please check your internet connection',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          );
         }
       },
     );

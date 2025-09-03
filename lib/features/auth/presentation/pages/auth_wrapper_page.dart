@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/navigation_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart';
 
 class AuthWrapperPage extends StatefulWidget {
@@ -39,13 +39,6 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (_isFirstTime == null || !_isFirstTime!) {
-    //   return const Scaffold(
-    //     backgroundColor: Colors.white,
-    //     body: Center(child: CircularProgressIndicator()),
-    //   );
-    // }
-
     if (_isFirstTime != null && _isFirstTime!) {
       return const OnboardingPage();
     }
@@ -60,11 +53,17 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
           return Scaffold(body: Center(child: Text(state.message)));
         } else if (state is AuthLoadingState) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            backgroundColor: Colors.white,
+            body: Center(
+              child: SpinKitDoubleBounce(color: Color(0xFF112D4F), size: 70.0),
+            ),
           );
         } else {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            backgroundColor: Colors.white,
+            body: Center(
+              child: SpinKitDoubleBounce(color: Color(0xFF112D4F), size: 70.0),
+            ),
           );
         }
       },

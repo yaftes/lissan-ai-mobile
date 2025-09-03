@@ -111,7 +111,6 @@ class GrammarResultShimmerPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Improved Version Placeholder
             Row(
               children: [
                 _shimmerCircle(size: 26),

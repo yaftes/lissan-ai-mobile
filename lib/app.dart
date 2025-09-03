@@ -3,6 +3,7 @@ import 'package:lissan_ai/features/auth/presentation/pages/auth_wrapper_page.dar
 import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/navigation_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/profile_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_tab_view.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => const OnboardingPage(),
         '/email-draft': (context) => const EmailTabView(),
         '/check-grammar': (context) => const GrammarTabView(),
+        '/profile': (context) => const UserProfilePage(),
       },
       initialRoute: '/',
     );
