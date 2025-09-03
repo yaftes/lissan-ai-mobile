@@ -121,43 +121,6 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // // Type selector
-                // const Text(
-                //   'Email Type:',
-                //   style: TextStyle(
-                //     fontWeight: FontWeight.bold,
-                //     fontSize: 16,
-                //     color: Color(0xff112d4f),
-                //   ),
-                // ),
-                // const SizedBox(height: 6),
-                // DropdownButtonFormField<String>(
-                //   value: selectedType,
-                //   items: types.map((type) {
-                //     return DropdownMenuItem<String>(
-                //       value: type,
-                //       child: Text(type),
-                //     );
-                //   }).toList(),
-                //   onChanged: (value) {
-                //     if (value != null) {
-                //       setState(() {
-                //         selectedType = value;
-                //       });
-                //     }
-                //   },
-                //   decoration: InputDecoration(
-                //     border: OutlineInputBorder(
-                //       borderRadius: BorderRadius.circular(12),
-                //     ),
-                //     contentPadding: const EdgeInsets.symmetric(
-                //       horizontal: 12,
-                //       vertical: 14,
-                //     ),
-                //   ),
-                // ),
-                // const SizedBox(height: 16),
-
                 // Tone selector
                 const Text(
                   'Tone:',
