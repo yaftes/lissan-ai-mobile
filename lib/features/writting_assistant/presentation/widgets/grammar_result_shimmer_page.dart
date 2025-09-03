@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GrammarResultShimmerPage extends StatelessWidget {
   const GrammarResultShimmerPage({super.key});
@@ -58,7 +57,6 @@ class GrammarResultShimmerPage extends StatelessWidget {
                     const SizedBox(width: 8),
                     _shimmerBox(
                       width: 120,
-                      height: 16,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ],
@@ -73,11 +71,11 @@ class GrammarResultShimmerPage extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Status Circle
-            Center(child: _shimmerCircle(size: 64)),
+            Center(child: _shimmerCircle()),
             const SizedBox(height: 12),
-            _shimmerBox(width: 140, height: 16),
+            _shimmerBox(width: 140),
             const SizedBox(height: 5),
-            _shimmerBox(width: 180, height: 16),
+            _shimmerBox(width: 180),
 
             const SizedBox(height: 20),
 
@@ -100,11 +98,11 @@ class GrammarResultShimmerPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       const SizedBox(height: 6),
-                      _shimmerBox(width: double.infinity, height: 14),
+                      _shimmerBox(height: 14),
                       const SizedBox(height: 2),
-                      _shimmerBox(width: double.infinity, height: 14),
+                      _shimmerBox(height: 14),
                       const SizedBox(height: 6),
-                      _shimmerBox(width: double.infinity, height: 12),
+                      _shimmerBox(height: 12),
                     ],
                   ),
                 );
@@ -120,14 +118,12 @@ class GrammarResultShimmerPage extends StatelessWidget {
                 const SizedBox(width: 5),
                 _shimmerBox(
                   width: 120,
-                  height: 16,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             _shimmerBox(
-              width: double.infinity,
               height: 80,
               borderRadius: BorderRadius.circular(16),
             ),
@@ -141,7 +137,6 @@ class GrammarResultShimmerPage extends StatelessWidget {
                 const SizedBox(width: 10),
                 _shimmerBox(
                   width: 140,
-                  height: 16,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ],
@@ -152,7 +147,6 @@ class GrammarResultShimmerPage extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: _shimmerBox(
-                    width: double.infinity,
                     height: 14,
                     borderRadius: BorderRadius.circular(8),
                   ),
