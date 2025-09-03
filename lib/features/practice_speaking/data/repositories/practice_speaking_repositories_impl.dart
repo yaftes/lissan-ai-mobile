@@ -24,7 +24,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
     final isConnected = await networkInfo.isConnected;
     if(isConnected){
       try{
-      return remoteDataSource.endPracticeSession(sessionId);
+      return Right(await remoteDataSource.endPracticeSession(sessionId));
       }catch(e){
         return const Left(ServerFailure(message: 'server error'));
       }
@@ -41,7 +41,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
     final isConnected = await networkInfo.isConnected;
     if(isConnected){
       try{
-        return remoteDataSource.getInterviewQuestion(sessionId);
+        return Right(await remoteDataSource.getInterviewQuestion(sessionId));
       }catch(e){
         return const Left(ServerFailure(message: ('server failure')));
       }
@@ -55,7 +55,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
     final isConnected = await networkInfo.isConnected;
     if(isConnected){
       try{
-      return remoteDataSource.startPracticeSession(type);
+      return Right(await remoteDataSource.startPracticeSession(type));
       }catch(e){
         return const Left(ServerFailure(message: 'server error'));
       }
@@ -69,7 +69,7 @@ class PracticeSpeakingRepositoriesImpl implements PracticeSpeakingRepository {
     final isConnected = await networkInfo.isConnected;
     if(isConnected){
       try{
-        return remoteDataSource.answerAndGetFeedback(answer);
+        return Right(await remoteDataSource.answerAndGetFeedback(answer));
       }catch(e){
         return const Left(ServerFailure(message: 'server error'));
       }

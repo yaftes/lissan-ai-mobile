@@ -13,7 +13,7 @@ class CircleAvatarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: (radius),
-      height: (radius) ,
+      height: (radius),
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
         color: Colors.white,
@@ -29,14 +29,9 @@ class CircleAvatarWidget extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(padd),
         child: Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-          ),
+          decoration: const BoxDecoration(shape: BoxShape.circle),
           child: ClipOval(
-            child: Image.asset(
-              'assets/images/person.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/person.png', fit: BoxFit.cover),
           ),
         ),
       ),

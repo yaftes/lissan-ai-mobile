@@ -4,7 +4,8 @@ import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/submit_modal.dart';
 
 class SpeechPage extends StatelessWidget {
-  const SpeechPage({super.key});
+  final VoidCallback onNext;
+  const SpeechPage({super.key, required this.onNext});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class SpeechPage extends StatelessWidget {
             onPressed: () {
               if (state.isListening) {
                 bloc.add(StopListeningEvent());
-                CustomPopupDemo(message: state.recognizedText).showCustomPopup(context);
+                CustomPopupDemo(message: state.recognizedText, onNext: onNext).showCustomPopup(context);
 
               } else {
                 bloc.add(StartListeningEvent());
@@ -66,15 +67,15 @@ class RecordButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(20),
-              backgroundColor: isListening ? const Color.fromARGB(255, 167, 38, 88) : const Color(0xFF3D72B3),
-              shadowColor: isListening ? const Color.fromARGB(255, 176, 36, 68) : const Color(0xFF3D72B3),
+              backgroundColor: isListening ? const Color.fromARGB(255, 167, 38, 88) : const Color(0xFF112D4F),
+              shadowColor: isListening ? const Color.fromARGB(255, 176, 36, 68) : const Color(0xFF112D4F),
               elevation: 8,
             ),
             onPressed: onPressed,
             child: Column(
               children: [
                 Icon(
-                  isListening ? Icons.stop : Icons.mic,
+                  isListening ? Icons.mic_off : Icons.mic,
                   color: Colors.white,
                   size: 30,
                 ),
@@ -96,6 +97,7 @@ class RecordButton extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
+
             height: 50,
             child: SingleChildScrollView(
               child: Text(

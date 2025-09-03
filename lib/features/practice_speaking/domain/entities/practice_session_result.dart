@@ -2,8 +2,8 @@ class PracticeSessionResult {
   final String sessionId;
   final int totalQuestions;
   final int completed;
-  final String? strengths;
-  final String? weaknesses;
+  final List<dynamic> strengths;
+  final List<dynamic> weaknesses;
   final int finalScore;
   final int createdAt; // you can also wrap this as DateTime
 
@@ -11,8 +11,8 @@ class PracticeSessionResult {
     required this.sessionId,
     required this.totalQuestions,
     required this.completed,
-    this.strengths,
-    this.weaknesses,
+    required this.strengths,
+    required this.weaknesses,
     required this.finalScore,
     required this.createdAt,
   });

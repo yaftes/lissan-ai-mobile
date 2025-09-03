@@ -74,7 +74,7 @@ class PracticeSpeakingBloc
       (failure) => emit(
         state.copyWith(status: BlocStatus.error, error: failure.toString()),
       ),
-      (_) => emit(state.copyWith(status: BlocStatus.sessionEnded)),
+      (feedback) => emit(state.copyWith(status: BlocStatus.sessionEnded, endSessionFeedback:feedback ),),
     );
   }
 

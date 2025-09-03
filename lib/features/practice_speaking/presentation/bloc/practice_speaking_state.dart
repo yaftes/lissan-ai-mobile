@@ -19,6 +19,7 @@ class PracticeSpeakingState extends Equatable {
   final String? error;
   final List<InterviewQuestion> questions;
   final int currentQuestionIndex;
+  final dynamic endSessionFeedback;
 
   // speech-to-text fields
   final String recognizedText;
@@ -34,6 +35,7 @@ class PracticeSpeakingState extends Equatable {
     this.isListening = false,
     this.questions = const [],
     this.currentQuestionIndex = 0,
+    this.endSessionFeedback,
   });
 
   PracticeSpeakingState copyWith({
@@ -46,6 +48,7 @@ class PracticeSpeakingState extends Equatable {
     bool? isListening,
     List<InterviewQuestion>? questions,
     int? currentQuestionIndex,
+    dynamic endSessionFeedback,
   }) {
     return PracticeSpeakingState(
       status: status ?? this.status,
@@ -57,10 +60,11 @@ class PracticeSpeakingState extends Equatable {
       isListening: isListening ?? this.isListening,
       questions: questions ?? this.questions,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+      endSessionFeedback: endSessionFeedback ?? this.endSessionFeedback,
     );
   }
 
   @override
   List<Object?> get props =>
-      [status, session, currentQuestion, feedback, error, recognizedText, isListening];
+      [status, session, currentQuestion, feedback, error, recognizedText, isListening, endSessionFeedback];
 }

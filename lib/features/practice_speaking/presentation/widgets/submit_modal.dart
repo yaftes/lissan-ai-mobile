@@ -5,7 +5,11 @@ import 'package:lissan_ai/features/practice_speaking/presentation/widgets/feedba
 
 class CustomPopupDemo {
   final String message;
-  const CustomPopupDemo({required this.message});
+  final VoidCallback onNext;
+  const CustomPopupDemo({
+    required this.message,
+    required this.onNext,
+  });
 
   void showCustomPopup(BuildContext context) {
     showDialog(
@@ -30,13 +34,16 @@ class CustomPopupDemo {
                   // Close the recording completed popup first
                   Navigator.of(context).pop();
                   // Show feedback popup
-                      showDialog(
-                      context: context,
-                      builder: (context) {
-                        return FeedbackPopup(feedback: state.feedback!);
-                      },
-                    );
-                                }
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return FeedbackPopup(
+                        feedback: state.feedback!,
+                        onNext: onNext,
+                      );
+                    },
+                  );
+                }
               },
               builder: (context, state) {
                 return Column(

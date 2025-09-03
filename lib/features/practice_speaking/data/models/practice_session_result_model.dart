@@ -5,21 +5,21 @@ class PracticeSessionResultModel extends PracticeSessionResult {
     required super.sessionId,
     required super.totalQuestions,
     required super.completed,
-    super.strengths,
-    super.weaknesses,
+    required super.strengths,
+    required super.weaknesses,
     required super.finalScore,
     required super.createdAt,
   });
 
   factory PracticeSessionResultModel.fromJson(Map<String, dynamic> json) {
     return PracticeSessionResultModel(
-      sessionId: json['session_id'] as String,
-      totalQuestions: json['total_questions'] as int,
       completed: json['completed'] as int,
-      strengths: json['strengths'] as String?,
-      weaknesses: json['weaknesses'] as String?,
-      finalScore: json['final_score'] as int,
       createdAt: json['created_at'] as int,
+      finalScore: json['final_score'] as int,
+      sessionId: json['session_id'] as String,
+      strengths: List<String>.from(json['strengths'] ?? []),   
+      totalQuestions: json['total_questions'] as int,
+      weaknesses: List<String>.from(json['weaknesses'] ?? []), 
     );
   }
 
@@ -35,3 +35,5 @@ class PracticeSessionResultModel extends PracticeSessionResult {
     };
   }
 }
+
+

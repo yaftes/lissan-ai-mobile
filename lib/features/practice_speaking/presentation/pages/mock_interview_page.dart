@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-
 import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/pages/end_page.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/menu_widget.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/lissan_app_bar.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_free_speech_audio.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MockInterviewPage extends StatefulWidget {
   const MockInterviewPage({super.key});
@@ -53,23 +55,12 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Lissan Ai',
-          style: GoogleFonts.inter(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
-      ),
-      drawer: const MenuWidget(),
+      backgroundColor: Colors.white,
+      appBar: const LissanAppBar(),
       body: BlocConsumer<PracticeSpeakingBloc, PracticeSpeakingState>(
-        listenWhen: (previous, current) {
-          return previous.currentQuestion != current.currentQuestion ||
-              previous.status != current.status;
-        },
+        listenWhen: (previous, current) =>
+            previous.currentQuestion != current.currentQuestion ||
+            previous.status != current.status,
         listener: (context, state) {
           if (state.status == BlocStatus.sessionStarted) {
             context.read<PracticeSpeakingBloc>().add(
@@ -80,10 +71,18 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               state.status == BlocStatus.questionsLoaded) {
             _speak(state.currentQuestion!.question);
           }
+          if (state.status == BlocStatus.sessionEnded &&
+              state.endSessionFeedback != null) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => EndPage(feedback: state.endSessionFeedback!),
+              ),
+            );
+          }
         },
         builder: (context, state) {
           if (state.status == BlocStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
+            return _buildShimmerLoading();
           }
 
           if (state.status == BlocStatus.error) {
@@ -106,8 +105,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                   const SizedBox(height: 16),
                   const Center(child: CircleAvatarWidget(radius: 100, padd: 8)),
                   const SizedBox(height: 16),
-                  
-                  // Mode buttons
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -117,7 +115,6 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
                     ],
                   ),
 
-                  // Call different UI based on selectedMode
                   if (selectedMode == 'mock')
                     _buildMockSection(context, state, currentQuestion)
                   else
@@ -127,24 +124,23 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
             );
           }
 
-          return const Center(
-            child: Text('Preparing your practice session...'),
-          );
+          return _buildShimmerLoading();
         },
       ),
     );
   }
 
   /// Mock Interview Section
-  Widget _buildMockSection(BuildContext context, PracticeSpeakingState state, String currentQuestion) {
+  Widget _buildMockSection(
+    BuildContext context,
+    PracticeSpeakingState state,
+    String currentQuestion,
+  ) {
     return Column(
       children: [
         Text(
           '🎯 Mock Interview Practice',
-          style: GoogleFonts.inter(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Container(
@@ -156,10 +152,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               colors: [Color(0xFFDDFFEF), Color(0xFFE2EFFF)],
             ),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
-            border: Border.all(
-              color: const Color(0xFFA7F3D0),
-              width: 1.5,
-            ),
+            border: Border.all(color: const Color(0xFFA7F3D0), width: 1.5),
           ),
           child: Text(
             'Question $_currentPage of $_maxPage. Let\'s practice this together! 💪',
@@ -172,7 +165,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
           question: currentQuestion,
           onSpeak: () => _speak(currentQuestion),
         ),
-        const SpeechPage(),
+        SpeechPage(onNext: () => _handleNextQuestion(context, state)),
         const SizedBox(height: 16),
         NavigationButtons(
           currentPage: _currentPage,
@@ -187,24 +180,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               );
             }
           },
-          onNext: () {
-            if (_currentPage < _maxPage + 1) {
-              setState(() => _currentPage++);
-            }
-            if (state.currentQuestionIndex < state.questions.length - 1) {
-              context.read<PracticeSpeakingBloc>().add(
-                MoveToNextQuestionEvent(),
-              );
-            } else if (state.currentQuestionIndex > 5 || _currentPage > 5) {
-              context.read<PracticeSpeakingBloc>().add(
-                EndPracticeSessionEvent(sessionId: state.session.sessionId),
-              );
-            } else {
-              context.read<PracticeSpeakingBloc>().add(
-                const GetInterviewQuestionsEvent(),
-              );
-            }
-          },
+          onNext: () => _handleNextQuestion(context, state),
         ),
         const SizedBox(height: 8),
         const Text(
@@ -216,20 +192,37 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
     );
   }
 
-  /// Free Speaking Section
+  void _handleNextQuestion(BuildContext context, PracticeSpeakingState state) {
+    if (_currentPage < _maxPage + 1) {
+      setState(() => _currentPage++);
+    }
+
+    if (state.currentQuestionIndex < state.questions.length - 1) {
+      context.read<PracticeSpeakingBloc>().add(MoveToNextQuestionEvent());
+    } else if (state.currentQuestionIndex >= 5 || _currentPage > _maxPage) {
+      context.read<PracticeSpeakingBloc>().add(
+        EndPracticeSessionEvent(sessionId: state.session.sessionId),
+      );
+    } else {
+      context.read<PracticeSpeakingBloc>().add(
+        const GetInterviewQuestionsEvent(),
+      );
+    }
+  }
+
   Widget _buildFreeSpeakingSection(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 16),
         Text(
           '🗣️ Free Speaking Mode',
-          style: GoogleFonts.inter(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.inter(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 30),
-        const SpeechPage(), // Reuse speech recording widget
+        const RecordFreeSpeechAudio(
+          websocketUrl:
+              'wss://lissan-ai-backend-dev.onrender.com/api/v1/ws/conversation',
+        ),
       ],
     );
   }
@@ -264,10 +257,53 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? const Color(0xFF3D72B3) : Colors.grey[200],
+        backgroundColor: isSelected
+            ? const Color(0xFF112D4F)
+            : Colors.grey[200],
         foregroundColor: isSelected ? Colors.white : Colors.black,
       ),
       child: Text(text),
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(width: 200, height: 20, color: Colors.white),
+          ),
+          const SizedBox(height: 16),
+          Shimmer.fromColors(
+            baseColor: Colors.grey[300]!,
+            highlightColor: Colors.grey[100]!,
+            child: Container(
+              width: double.infinity,
+              height: 120,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: List.generate(3, (index) {
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(height: 40, color: Colors.white),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
     );
   }
 }

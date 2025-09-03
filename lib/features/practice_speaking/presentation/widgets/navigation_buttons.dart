@@ -38,20 +38,19 @@ class NavigationButtons extends StatelessWidget {
             ),
           ),
         const SizedBox(width: 32),
-        if (currentPage < maxPage)
           ElevatedButton(
             onPressed: onNext,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3D72B3),
+              backgroundColor: const Color(0xFF112D4F),
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
               padding: const EdgeInsets.all(12),
             ),
-            child: const Row(
+            child:  Row(
               children: [
-                Text('Next Question  ', style: TextStyle(color: Colors.white)),
-                Icon(Icons.arrow_forward, color: Colors.white),
+                Text(currentPage < maxPage ? 'Next Question  ': 'End Session', style: const TextStyle(color: Colors.white)),
+                const Icon(Icons.arrow_forward, color: Colors.white),
               ],
             ),
           ),
