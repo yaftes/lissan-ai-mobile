@@ -17,10 +17,7 @@ void main() async {
         BlocProvider(create: (context) => getIt<AuthBloc>()),
         BlocProvider(create: (context) => getIt<WrittingBloc>()),
       ],
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: EmailTabView(),
-      ),
+      child: const MyApp(),
     ),
   );
 }

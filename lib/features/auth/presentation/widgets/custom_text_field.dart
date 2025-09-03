@@ -43,6 +43,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         const SizedBox(height: 10),
         TextFormField(
+          keyboardType: widget.title == 'Email'
+              ? TextInputType.emailAddress
+              : null,
           enabled: widget.enabled,
           obscureText: _obscureText,
           controller: widget.controller,
@@ -86,6 +89,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           validator: (value) {
             if (value == null || value.isEmpty) {
               return '${widget.title} is required';
+            }
+            if (widget.title == 'Password' && value.length < 6) {
+              return 'Password must be at least 6 characters';
+            }
+            if (widget.title == 'Email' &&
+                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              return 'Please enter a valid email';
             }
             return null;
           },

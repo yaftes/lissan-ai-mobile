@@ -8,7 +8,6 @@ const Color kCardBackgroundColor = Color(0xFFFFFFFF);
 const Color kTextColor = Color(0xFF333333);
 const Color kLightTextColor = Color(0xFF6B7280);
 const Color kGreenAccent = Color(0xFF00C853);
-const Color kOrangeAccent = Color(0xFFFFA000);
 
 const double kDefaultPadding = 16.0;
 const double kSmallPadding = 8.0;
@@ -25,8 +24,6 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  int _selectedTabIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +33,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildProfileHeader(),
-
+            const SizedBox(height: 10),
             // 🔹 Stats row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -62,7 +59,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     '7',
                     'Day Streak',
                     '🔥 Active',
-                    valueColor: kOrangeAccent,
+                    valueColor: const Color(0xFFFFA000),
                   ),
                 ],
               ),
@@ -94,7 +91,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   // 🔹 Profile Header
   Widget _buildProfileHeader() {
     return SizedBox(
-      height: 280,
+      height: 140,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -109,55 +106,39 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ),
           ),
 
-          // Edit button
           Positioned(
-            top: MediaQuery.of(context).padding.top + kSmallPadding,
-            right: kDefaultPadding,
-            child: Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.white, Color.fromARGB(255, 25, 51, 83)],
-                  begin: Alignment.topRight,
-                  end: Alignment.bottomLeft,
-                ),
-
-                borderRadius: BorderRadius.circular(150),
-              ),
-            ),
-          ),
-
-          Positioned(
-            top: 100,
+            top: 15,
             left: kDefaultPadding,
             right: kDefaultPadding,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Stack(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircleAvatar(
+                Padding(
+                  padding: const EdgeInsets.all(1),
+                  child: Stack(
+                    children: [
+                      const CircleAvatar(
                         radius: 40,
                         backgroundImage: AssetImage('assets/images/avatar.png'),
                       ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: kGreenAccent,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: kBackgroundColor, width: 2),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          decoration: BoxDecoration(
+                            color: kGreenAccent,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: kBackgroundColor,
+                              width: 2,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(width: kMediumPadding),
                 const Expanded(
@@ -257,7 +238,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: kLightTextColor,
@@ -300,7 +281,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               const SizedBox(width: kSmallPadding),
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: kPrimaryColor,
@@ -393,7 +374,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
         children: [
           Icon(icon, size: 18, color: kLightTextColor),
           const SizedBox(width: kSmallPadding),
-          Text(label, style: TextStyle(fontSize: 14, color: kTextColor)),
+          Text(label, style: const TextStyle(fontSize: 14, color: kTextColor)),
           const Spacer(),
           if (isButton)
             Container(
@@ -407,7 +388,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               child: Text(
                 value,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                   color: kPrimaryColor,
@@ -417,7 +398,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
           else
             Text(
               value,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: kTextColor,
@@ -446,13 +427,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         children: [
-          Text(skill, style: TextStyle(fontSize: 14, color: kTextColor)),
+          Text(skill, style: const TextStyle(fontSize: 14, color: kTextColor)),
           const Spacer(),
           Row(
             children: List.generate(5, (index) {
               return Icon(
                 index < rating ? Icons.star_rounded : Icons.star_border_rounded,
-                color: kOrangeAccent,
+                color: const Color(0xFFFFA000),
                 size: 18,
               );
             }),

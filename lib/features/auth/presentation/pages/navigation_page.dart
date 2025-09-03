@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/profile_page.dart';
+
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_tab_view.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/grammar_tab_view.dart';
 
@@ -16,6 +17,7 @@ class _NavigationPageState extends State<NavigationPage> {
 
   final List<Widget> _pages = const [
     Dashboard(),
+    Scaffold(body: Center(child: Text('Speaking page'))),
     EmailTabView(),
     GrammarTabView(),
     UserProfilePage(),
@@ -52,9 +54,10 @@ class _NavigationPageState extends State<NavigationPage> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
+            icon: Icon(Icons.space_dashboard),
             label: 'Dashboard',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.mic), label: 'Speaking'),
           BottomNavigationBarItem(icon: Icon(Icons.email), label: 'Email'),
           BottomNavigationBarItem(
             icon: Icon(Icons.language_outlined),

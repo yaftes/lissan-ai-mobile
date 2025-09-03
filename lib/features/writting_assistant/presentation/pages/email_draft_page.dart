@@ -47,7 +47,6 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Input box
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFF9F9F9),
@@ -57,7 +56,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
                   children: [
-                    TextField(
+                    TextFormField(
                       controller: _controller,
                       maxLines: 5,
                       style: const TextStyle(
@@ -67,7 +66,8 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Enter your text here...',
+                        hintText:
+                            'Enter your text here  እባክዎ እዚህ ጽሁፍዎን ያስገቡ...',
                         hintStyle: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 15,
@@ -108,7 +108,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                               });
                             },
                             child: const Icon(
-                              Icons.clear,
+                              Icons.clear_outlined,
                               size: 30,
                               color: Color(0xFF112D4F),
                             ),
@@ -219,6 +219,9 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                             ? FontWeight.bold
                             : FontWeight.normal,
                       ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                       onSelected: (_) {
                         setState(() {
                           selectedTone = tone;
@@ -301,6 +304,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
+                        border: BoxBorder.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: const [
                           BoxShadow(
@@ -313,15 +317,6 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Generated Email',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(12),
@@ -345,6 +340,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                             decoration: BoxDecoration(
                               color: Colors.grey[100],
                               borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey),
                             ),
                             child: Text(
                               state.emailDraft.body,
@@ -396,11 +392,11 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
         } else {
           return const Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
                 Text(
-                  'Please check your internet connection',
+                  'Please check your connection',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                 ),
               ],

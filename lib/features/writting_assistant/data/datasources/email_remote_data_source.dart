@@ -19,7 +19,6 @@ abstract class EmailRemoteDataSource {
   );
 }
 
-// REAL API implementation
 class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
   final http.Client client;
 
@@ -47,8 +46,9 @@ class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
       if (response.statusCode == 200) {
         return EmailDraftModel.fromJson(json.decode(response.body));
       } else {
-        throw const ServerException(
-          message: 'Failed to generate email:  {response.statusCode}',
+        final errorBody = json.decode(response.body);
+        throw ServerException(
+          message: 'Failed to generate email: ${errorBody['error']}',
         );
       }
     } on SocketException {
@@ -80,8 +80,9 @@ class EmailRemoteDataSourceImpl implements EmailRemoteDataSource {
       if (response.statusCode == 200) {
         return ImprovedEmailModel.fromJson(json.decode(response.body));
       } else {
+        final errorBody = json.decode(response.body);
         throw ServerException(
-          message: 'Failed to improve email: ${response.statusCode}',
+          message: 'Failed to generate email: ${errorBody['error']}',
         );
       }
     } on SocketException {

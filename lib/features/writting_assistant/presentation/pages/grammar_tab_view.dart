@@ -45,7 +45,7 @@ class _GrammarTabViewState extends State<GrammarTabView> {
                     icon: Icon(Icons.spellcheck, size: 25),
                     text: 'Check Grammar',
                   ),
-                  Tab(icon: Icon(Icons.school, size: 25), text: 'Practice'),
+                  Tab(icon: Icon(Icons.school, size: 25), text: 'Sample Texts'),
                 ],
               ),
             ),

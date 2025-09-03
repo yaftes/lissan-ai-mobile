@@ -100,7 +100,6 @@ class _PracticeExamplePageState extends State<PracticeExamplePage> {
                               );
                               if (value != null &&
                                   (value.text?.isNotEmpty ?? false)) {
-                                // append pasted text and update cursor
                                 final newText =
                                     _controller.text + (value.text ?? '');
                                 setState(() {
