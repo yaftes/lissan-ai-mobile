@@ -1,13 +1,15 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
+import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/navigation_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
-
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
@@ -16,311 +18,261 @@ class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool isPasswordVisible = false;
+  bool rememberMe = false;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 35,
-                  vertical: 10,
-                ),
+        child: BlocBuilder<ConnectivityBloc, ConnectivityState>(
+          builder: (context, connectivityState) {
+            if (connectivityState is ConnectivityDisconnected) {
+              return const Center(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      height: 80,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          Center(
-                            child: Text(
-                              'Welcome Back!',
-                              style: GoogleFonts.inter(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          SizedBox(
-                            height: 70,
-                            width: 70,
-                            child: Image.asset('assets/images/celebrate.jpg'),
-                          ),
-                        ],
-                      ),
-                    ),
-
+                    Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
+                    SizedBox(height: 10),
                     Text(
-                      'Ready to continue your English journey?',
-                      style: GoogleFonts.inter(
+                      'Please check your internet connection',
+                      style: TextStyle(
+                        fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Sign in',
-                      style: GoogleFonts.inter(
-                        color: const Color(0xFF08CC2F),
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                      ),
-                    ),
+                  ],
+                ),
+              );
+            }
 
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Continue your path to English mastery!',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey,
-                          ),
-                        ),
-
-                        const SizedBox(width: 5),
-                        SizedBox(
-                          height: 30,
-                          width: 20,
-                          child: Transform.rotate(
-                            angle: 22.92 * math.pi / 180,
-                            child: Image.asset('assets/images/rocket.jpg'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+            return BlocConsumer<AuthBloc, AuthState>(
+              listener: (context, authState) {
+                if (authState is AuthErrorState) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Row(
                         children: [
-                          CustomTextField(
-                            controller: emailController,
-                            title: 'Email Address',
-                            icon: Icons.email,
-                            hintText: 'Email',
-                          ),
-                          const SizedBox(height: 15),
-                          CustomTextField(
-                            controller: passwordController,
-                            title: 'Password',
-                            icon: Icons.password,
-                            hintText: 'password',
-                            obscure: true,
-                          ),
+                          Icon(Icons.error, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Login Failed'),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 18),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Checkbox(value: false, onChanged: (value) {}),
-                            const Text('Remember Me'),
-                          ],
-                        ),
-                        Text(
-                          'Forgot Password?',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF08B129),
-                          ),
+                      content: Text(authState.message),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('OK'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 18),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFF6BDB54),
-                            Color(0xFF38A0AB),
-                            Color(0xFF1848F4),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.25),
-                            blurRadius: 10,
-                            offset: Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 14,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Sign In',
+                  );
+                }
+              },
+              builder: (context, authState) {
+                if (authState is AuthenticatedState) {
+                  return const NavigationPage();
+                }
+                final isLoading = authState is AuthLoadingState;
+
+                return GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 80,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 40),
+                          AnimatedScale(
+                            scale: isLoading ? 0.9 : 1.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: const Text(
+                              'Login',
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF112D4F),
                               ),
                             ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              size: 20,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'New to LissanAI?',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w500,
-                            color: const Color(0xFF757575),
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SignupPage(),
+                          const SizedBox(height: 40),
+                          Form(
+                            key: formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CustomTextField(
+                                  controller: emailController,
+                                  title: 'Email Address',
+                                  icon: Icons.email,
+                                  hintText: 'Enter your email',
+                                  enabled: !isLoading,
+                                ),
+                                const SizedBox(height: 15),
+                                CustomTextField(
+                                  controller: passwordController,
+                                  title: 'Password',
+                                  icon: Icons.lock,
+                                  hintText: 'Enter your password',
+                                  obscure: !isPasswordVisible,
+                                  enabled: !isLoading,
+                                ),
+                              ],
                             ),
                           ),
-                          child: Text(
-                            'Create Account',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: const Color(0xFF08B129),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: Divider(thickness: 1, color: Colors.grey),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            'Or continue with Google',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(thickness: 1, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFCFCFC),
-                          border: BoxBorder.all(color: const Color(0xFF92FFB3)),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: const [
-                            BoxShadow(
-                              offset: Offset(0, 4),
-                              color: Color.fromRGBO(0, 0, 0, 0.25),
-                              blurRadius: 30,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
+                          const SizedBox(height: 18),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: Image.asset('assets/images/google.png'),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: rememberMe,
+                                    onChanged: isLoading
+                                        ? null
+                                        : (value) {
+                                            setState(() {
+                                              rememberMe = value ?? false;
+                                            });
+                                          },
+                                    activeColor: const Color(0xFF112D4F),
+                                  ),
+                                  Text(
+                                    'Remember Me',
+                                    style: TextStyle(
+                                      color: isLoading
+                                          ? Colors.grey
+                                          : const Color(0xFF112D4F),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Sign In with Google',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                  color: const Color(0xFF08B129),
+                              InkWell(
+                                onTap: isLoading ? null : () {},
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w600,
+                                    color: isLoading
+                                        ? Colors.grey
+                                        : const Color(0xFF112D4F),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: 18),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            width: double.infinity,
+                            height: isLoading ? 60 : 50,
+                            child: ElevatedButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      if (formKey.currentState!.validate()) {
+                                        final email = emailController.text
+                                            .trim();
+                                        final password = passwordController.text
+                                            .trim();
+                                        FocusScope.of(context).unfocus();
+                                        context.read<AuthBloc>().add(
+                                          SignInEvent(
+                                            email: email,
+                                            password: password,
+                                          ),
+                                        );
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF112D4F),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 2,
+                                shadowColor: const Color(
+                                  0xFF112D4F,
+                                ).withOpacity(0.3),
+                              ),
+                              child: isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Sign In',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'New to LissanAI?',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(0xFF757575),
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              InkWell(
+                                onTap: isLoading
+                                    ? null
+                                    : () => Navigator.pushNamed(
+                                        context,
+                                        '/sign-up',
+                                      ),
+                                child: Text(
+                                  'Create Account',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: isLoading
+                                        ? Colors.grey
+                                        : const Color(0xFF112D4F),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 40),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildCard(Colors.green, 'Secure Login'),
-                    const SizedBox(width: 10),
-                    _buildCard(Colors.blue, 'Fast Access'),
-                    const SizedBox(width: 10),
-                    _buildCard(Colors.deepPurpleAccent, 'Always Available'),
-                  ],
-                ),
-              ),
-            ],
-          ),
+                  ),
+                );
+              },
+            );
+          },
         ),
       ),
-    );
-  }
-
-  Widget _buildCard(Color color, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 8),
-        Text(text, style: GoogleFonts.inter(fontSize: 13)),
-      ],
     );
   }
 }

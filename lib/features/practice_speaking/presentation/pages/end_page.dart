@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lissan_ai/features/practice_speaking/data/models/practice_session_result_model.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/lissan_app_bar.dart';
 
 class EndPage extends StatelessWidget {
   final PracticeSessionResultModel feedback;
@@ -12,7 +11,7 @@ class EndPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const LissanAppBar(),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -53,7 +52,6 @@ class EndPage extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              
               if (feedback.strengths.isNotEmpty)
                 _buildInfoCard(
                   title: 'Strengths',
@@ -63,7 +61,6 @@ class EndPage extends StatelessWidget {
                   prefix: '✅ ',
                 ),
 
-              
               if (feedback.weaknesses.isNotEmpty)
                 _buildInfoCard(
                   title: 'Weaknesses',
@@ -75,7 +72,6 @@ class EndPage extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -93,7 +89,7 @@ class EndPage extends StatelessWidget {
                     icon: const Icon(Icons.refresh),
                     label: const Text('Retry'),
                     onPressed: () {
-                      Navigator.of(context).pop(); 
+                      Navigator.of(context).pop();
                     },
                   ),
                   ElevatedButton.icon(
@@ -109,9 +105,7 @@ class EndPage extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.exit_to_app),
                     label: const Text('Exit'),
-                    onPressed: () {
-                      
-                    },
+                    onPressed: () {},
                   ),
                 ],
               ),
@@ -123,7 +117,6 @@ class EndPage extends StatelessWidget {
     );
   }
 
-  
   Widget _buildInfoCard({
     required String title,
     required IconData icon,

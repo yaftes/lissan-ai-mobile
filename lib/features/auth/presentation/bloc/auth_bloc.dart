@@ -25,7 +25,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AppStartedEvent>((event, emit) async {
       emit(AuthLoadingState());
       final token = await getTokenUsecase();
-      if (token == null) {
+      if (!token) {
         emit(UnAuthenticatedState());
       } else {
         add(SignInWithTokenEvent());
@@ -56,9 +56,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = User(
         email: event.email,
         password: event.password,
-        name: event.fullName,
+        name: event.name,
       );
-      final result = await signInUsecase(user);
+      final result = await signUpUsecase(user);
       result.fold(
         (failure) => emit(AuthErrorState(message: failure.message)),
         (success) => emit(AuthenticatedState(success)),

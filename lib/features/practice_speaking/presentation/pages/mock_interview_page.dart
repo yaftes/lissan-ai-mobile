@@ -5,7 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/pages/end_page.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/lissan_app_bar.dart';
+
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
@@ -56,7 +56,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const LissanAppBar(),
+
       body: BlocConsumer<PracticeSpeakingBloc, PracticeSpeakingState>(
         listenWhen: (previous, current) =>
             previous.currentQuestion != current.currentQuestion ||

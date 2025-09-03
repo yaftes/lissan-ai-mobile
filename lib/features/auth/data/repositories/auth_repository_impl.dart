@@ -9,8 +9,8 @@ import 'package:lissan_ai/features/auth/domain/repositories/auth_repository.dart
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
-  final NetworkInfo networkInfo;
   final AuthLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
@@ -71,60 +71,33 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> signInWithToken() async {
-    if (await networkInfo.isConnected) {
-      try {
-        final data = await remoteDataSource.signInWithToken();
-        return Right(data);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(message: e.message));
-      } on CacheException catch (e) {
-        return Left(CacheFailure(message: e.message));
-      } catch (e) {
-        return Left(UnexpectedFailure(message: e.toString()));
-      }
+    try {
+      final data = await remoteDataSource.signInWithToken();
+      return Right(data);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return Left(UnexpectedFailure(message: e.toString()));
     }
-    return const Left(NetworkFailure(message: 'No internet connection'));
-  }
-
-  // @override
-  // Future<String?> getToken() async{
-  //   return await localDataSource.getRefreshToken();
-  // }
-
-  @override
-  Future<Either<Failure, User>> signInWithGoogle(String token) {
-    // TODO: implement signInWithGoogle
-    throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, User>> signUpWithGoogle() {
-    // TODO: implement signUpWithGoogle
-    throw UnimplementedError();
-  }
+  Future<bool> isTokenValid() async {
+    try {
+      final accessToken = await localDataSource.getAccessToken();
+      final expiryTime = await localDataSource.getExpiryTime();
+      final now = DateTime.now().millisecondsSinceEpoch;
 
-  @override
-  Future<Either<Failure, Unit>> deleteAccount() {
-    // TODO: implement deleteAccount
-    throw UnimplementedError();
-  }
+      if (accessToken != null &&
+          accessToken.isNotEmpty &&
+          (expiryTime == null || now < expiryTime)) {
+        return true;
+      }
 
-  @override
-  Future<Either<Failure, Unit>> forgotPassword() {
-    // TODO: implement forgotPassword
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, Unit>> updateProfile(User user) {
-    // TODO: implement updateProfile
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Either<Failure, bool>> hasConnectedToInternet() {
-    // TODO: implement hasConnectedToInternet
-    throw UnimplementedError();
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
   
   @override

@@ -14,29 +14,29 @@ class UserModel extends User {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['user']['id'],
-      name: json['user']['name'],
-      email: json['user']['email'],
-      password: json['user']['password'],
-      imagePath: json['user']['imagePath'],
-      skills: List<String>.from(json['user']['skills'] ?? []),
-      experiences: List<String>.from(json['user']['experiences'] ?? []),
-      careerGoals: List<String>.from(json['user']['careerGoals'] ?? []),
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      password: json['password'], // will be null in response (that’s fine)
+      imagePath: json['imagePath'], // null
+      skills: (json['skills'] as List<dynamic>?)?.cast<String>() ?? [],
+      experiences:
+          (json['experiences'] as List<dynamic>?)?.cast<String>() ?? [],
+      careerGoals:
+          (json['careerGoals'] as List<dynamic>?)?.cast<String>() ?? [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'user': {
-        'id': id,
-        'name': name,
-        'email': email,
-        'password': password,
-        'imagePath': imagePath,
-        'skills': skills,
-        'experiences': experiences,
-        'careerGoals': careerGoals,
-      },
+      'id': id,
+      'name': name,
+      'email': email,
+      'password': password,
+      'imagePath': imagePath,
+      'skills': skills,
+      'experiences': experiences,
+      'careerGoals': careerGoals,
     };
   }
 }
