@@ -5,3 +5,16 @@ class CheckGrammarEvent extends GrammarEvent {
 
   CheckGrammarEvent({required this.englishText});
 }
+
+
+class GetSentenceEvent extends GrammarEvent {}
+
+class SendPronunciationEvent extends GrammarEvent {
+  final String targetText;
+  final String audioFilePath;
+
+  SendPronunciationEvent({
+    required this.targetText,
+    required this.audioFilePath,
+  });
+}

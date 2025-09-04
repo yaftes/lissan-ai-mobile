@@ -17,6 +17,8 @@ class GrammarCheckPage extends StatefulWidget {
     this.onAutoCheckDone,
   });
 
+  
+
   @override
   State<GrammarCheckPage> createState() => _GrammarCheckPageState();
 }
@@ -73,7 +75,7 @@ class _GrammarCheckPageState extends State<GrammarCheckPage> {
               padding: EdgeInsets.only(right: 8.0),
               child: CircleAvatar(
                 radius: 20,
-                backgroundImage: AssetImage('assets/images/image.png'),
+                backgroundImage: AssetImage('assets/images/avatar.png'),
               ),
             ),
           ],

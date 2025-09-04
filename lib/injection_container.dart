@@ -3,30 +3,65 @@ import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:lissan_ai/core/network/network_info.dart';
 import 'package:lissan_ai/features/writting_assistant/data/datasources/grammar_remote_data_sources.dart';
+import 'package:lissan_ai/features/writting_assistant/data/datasources/pronunciation_remote_data_source.dart';
+import 'package:lissan_ai/features/writting_assistant/data/datasources/sentence_remote_data_source.dart';
 import 'package:lissan_ai/features/writting_assistant/data/repositories/grammar_repository_impl.dart';
+import 'package:lissan_ai/features/writting_assistant/data/repositories/pronunciation_repository_impl.dart';
+import 'package:lissan_ai/features/writting_assistant/data/repositories/sentence_repository_impl.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/repositories/grammar_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/pronunciation_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/sentence_repository.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/check_grammar_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/get_sentence_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/send_pronunciation_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/grammar_bloc.dart';
 
-final sl = GetIt.instance; 
+final getIt = GetIt.instance;
 
 Future<void> init() async {
-  // BLoC
-  sl.registerFactory(() => GrammarBloc(checkGrammarUsecase: sl()));
+  // -------------------- EXTERNAL --------------------
+  getIt.registerLazySingleton(() => http.Client());
+  getIt.registerLazySingleton(() => InternetConnectionChecker.createInstance());
 
-  // Use cases
-  sl.registerLazySingleton(() => CheckGrammarUsecase(sl()));
+  // -------------------- CORE --------------------
+  getIt.registerLazySingleton<NetworkInfo>(
+    () => NetworkInfoImpl(getIt()),
+  ); // depends on InternetConnectionChecker
 
-  // Repository
-  sl.registerLazySingleton<GrammarRepository>(() => GrammarRepositoryImpl(remoteDataSources: sl(),networkInfo: sl()));
+  // -------------------- DATA SOURCES --------------------
+  getIt.registerLazySingleton<GrammarRemoteDataSources>(
+    () => GrammarRemoteDataSourcesimpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<SentenceRemoteDataSource>(
+    () => SentenceRemoteDataSourceImpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<PronunciationRemoteDataSource>(
+    () => PronunciationRemoteDataSourceImpl(client: getIt()),
+  );
 
-  // Data sources
-  sl.registerLazySingleton<GrammarRemoteDataSources>(() => GrammarRemoteDataSourcesimpl(client: sl()));
+  // -------------------- REPOSITORIES --------------------
+  getIt.registerLazySingleton<GrammarRepository>(
+    () =>
+        GrammarRepositoryImpl(remoteDataSources: getIt(), networkInfo: getIt()),
+  );
+  getIt.registerLazySingleton<SentenceRepository>(
+    () => SentenceRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<PronunciationRepository>(
+    () => PronunciationRepositoryImpl(remoteDataSource: getIt()),
+  );
 
-  // Core
-  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+  // -------------------- USE CASES --------------------
+  getIt.registerLazySingleton(() => CheckGrammarUsecase(getIt()));
+  getIt.registerLazySingleton(() => GetSentenceUsecase(getIt()));
+  getIt.registerLazySingleton(() => SendPronunciationUsecase(getIt()));
 
-  // External
-  sl.registerLazySingleton(() => http.Client());
-  sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
+  // -------------------- BLOC --------------------
+  getIt.registerFactory(
+    () => GrammarBloc(
+      checkGrammarUsecase: getIt(),
+      getSentenceUsecase: getIt(),
+      sendPronunciationUsecase: getIt(),
+    ),
+  );
 }

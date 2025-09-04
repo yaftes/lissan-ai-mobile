@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/grammar_bloc.dart';
-import 'package:lissan_ai/features/writting_assistant/presentation/pages/home_page.dart';
+import 'package:lissan_ai/features/writting_assistant/presentation/pages/pronounciation_page.dart';
+
 import 'package:lissan_ai/injection_container.dart' as di;
 
 void main() async {
@@ -16,14 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => di.sl<GrammarBloc>(),
-        ),
-      ],
-      child:const MaterialApp(
+      providers: [BlocProvider(create: (_) => di.getIt<GrammarBloc>())],
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: AudioRecorderPlayerApp(),
       ),
     );
   }

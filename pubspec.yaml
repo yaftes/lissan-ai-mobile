@@ -43,6 +43,10 @@ dependencies:
   bloc_test: ^10.0.0
   flutter_secure_storage: ^9.2.4
   google_fonts: ^6.3.0
+  record: ^6.1.1           
+  audioplayers: ^6.5.0 
+  flutter_tts: ^3.8.3
+  
   
   
   flutter_native_splash: ^2.4.6
@@ -50,6 +54,8 @@ dependencies:
   flutter_spinkit: ^5.2.1
   cupertino_icons: ^1.0.8
   internet_connection_checker: ^3.0.1
+  just_audio: ^0.10.4
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
