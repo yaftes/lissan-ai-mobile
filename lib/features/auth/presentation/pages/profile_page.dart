@@ -27,7 +27,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             children: [
               _buildProfileHeader(),
               const SizedBox(height: 16),
-              _buildYearlyStreakSection(), // 👈 full year activity grid
+              _buildYearlyStreakSection(),
             ],
           ),
         ),
@@ -36,13 +36,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildProfileHeader() {
-    return Row(
+    return const Row(
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 40,
           backgroundImage: AssetImage('assets/images/avatar.png'),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
