@@ -31,7 +31,7 @@ class CircleAvatarWidget extends StatelessWidget {
         child: Container(
           decoration: const BoxDecoration(shape: BoxShape.circle),
           child: ClipOval(
-            child: Image.asset('assets/images/person.png', fit: BoxFit.cover),
+            child: Image.asset('assets/images/avatar.png', fit: BoxFit.cover),
           ),
         ),
       ),

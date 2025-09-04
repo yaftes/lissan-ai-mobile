@@ -13,6 +13,7 @@ class Dashboard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Greeting card
               Container(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
@@ -26,7 +27,10 @@ class Dashboard extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 35,
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -70,7 +74,7 @@ class Dashboard extends StatelessWidget {
                             shape: BoxShape.circle,
                             color: Colors.white24,
                             image: DecorationImage(
-                              image: AssetImage('assets/images/person.png'),
+                              image: AssetImage('assets/images/avatar.png'),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -85,7 +89,10 @@ class Dashboard extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
+
+              // Progress card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -143,10 +150,130 @@ class Dashboard extends StatelessWidget {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
-              const Text(
-                'What would you like to practice?',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+
+              // Practice section
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'What would you like to practice?',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Pronunciation Coach Button
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF0A1C5D),
+                        Color(0xFF3D72B3),
+                        Color(0xFF22C55E),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.2),
+                        ),
+                        child: const Icon(
+                          Icons.record_voice_over,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Pronunciation Coach',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                              'Practice your pronunciation with real-time feedback.',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        color: Colors.white70,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Lessons Section
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'Your Lessons',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              SizedBox(
+                height: 100,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    _buildLessonCard('Vocabulary Basics', [
+                      Colors.orange,
+                      Colors.deepOrange,
+                    ], Icons.book),
+                    _buildLessonCard('Grammar Tips', [
+                      Colors.blue,
+                      Colors.lightBlue,
+                    ], Icons.menu_book),
+                    _buildLessonCard('Pronunciation Practice', [
+                      Colors.green,
+                      Colors.teal,
+                    ], Icons.mic),
+                    _buildLessonCard('Conversation Skills', [
+                      Colors.purple,
+                      Colors.pink,
+                    ], Icons.chat),
+                  ],
+                ),
               ),
             ],
           ),
@@ -172,6 +299,48 @@ class Dashboard extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
         ),
       ],
+    );
+  }
+
+  Widget _buildLessonCard(
+    String title,
+    List<Color> gradientColors,
+    IconData icon,
+  ) {
+    return Container(
+      width: 140,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors.last.withOpacity(0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.white, size: 28),
+          const Spacer(),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

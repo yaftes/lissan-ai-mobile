@@ -18,7 +18,7 @@ class PracticeSpeakingBloc
   final EndPraciceSessionUsecase endPracticeSessionUsecase;
   final GetInterviewQuestionsUsecase getInterviewQuestionsUsecase;
   final SubmitAnswerAndGetFeedbackUsecase submitAndGetAnswerUsecase;
-  final RecognizeSpeech recognizeSpeech;
+  final RecognizeSpeechUsecase recognizeSpeech;
 
   StreamSubscription<String>? _wordsSub;
   StreamSubscription<String>? _errorSub;
@@ -30,13 +30,11 @@ class PracticeSpeakingBloc
     required this.submitAndGetAnswerUsecase,
     required this.recognizeSpeech,
   }) : super(const PracticeSpeakingState()) {
-    
     on<StartPracticeSessionEvent>(_onStartSession);
     on<EndPracticeSessionEvent>(_onEndSession);
     on<GetInterviewQuestionsEvent>(_onGetQuestions);
     on<SubmitAnswerEvent>(_onSubmitAnswer);
 
-    
     on<InitSpeechEvent>(_onInit);
     on<StartListeningEvent>(_onStartListening);
     on<StopListeningEvent>(_onStopListening);
@@ -47,11 +45,11 @@ class PracticeSpeakingBloc
     on<MoveToNextQuestionEvent>(_onMoveToNextQuestion);
   }
 
-  
   Future<void> _onStartSession(
     StartPracticeSessionEvent event,
     Emitter<PracticeSpeakingState> emit,
   ) async {
+    print('Speaking called');
     emit(state.copyWith(status: BlocStatus.loading));
     final result = await startPracticeSessionUsecase(event.type);
     result.fold(
@@ -74,7 +72,12 @@ class PracticeSpeakingBloc
       (failure) => emit(
         state.copyWith(status: BlocStatus.error, error: failure.toString()),
       ),
-      (feedback) => emit(state.copyWith(status: BlocStatus.sessionEnded, endSessionFeedback:feedback ),),
+      (feedback) => emit(
+        state.copyWith(
+          status: BlocStatus.sessionEnded,
+          endSessionFeedback: feedback,
+        ),
+      ),
     );
   }
 
@@ -102,7 +105,7 @@ class PracticeSpeakingBloc
         emit(
           state.copyWith(
             status: BlocStatus.questionsLoaded,
-            currentQuestion: question, 
+            currentQuestion: question,
             questions: updateQuestions,
             currentQuestionIndex: updateQuestions.length - 1,
           ),
@@ -131,7 +134,6 @@ class PracticeSpeakingBloc
     );
   }
 
-  
   Future<void> _onInit(
     InitSpeechEvent event,
     Emitter<PracticeSpeakingState> emit,
@@ -160,7 +162,6 @@ class PracticeSpeakingBloc
   ) async {
     await recognizeSpeech.stopListening();
     emit(state.copyWith(isListening: false));
-   
   }
 
   void _onSpeechResult(
@@ -176,32 +177,36 @@ class PracticeSpeakingBloc
   ) {
     emit(state.copyWith(error: event.message, isListening: false));
   }
+
   Future<void> _onMoveToPreviousQuestion(
-      MoveToPreviousQuestionEvent event,
-      Emitter<PracticeSpeakingState> emit,
+    MoveToPreviousQuestionEvent event,
+    Emitter<PracticeSpeakingState> emit,
   ) async {
     if (state.currentQuestionIndex > 0) {
       final newIndex = state.currentQuestionIndex - 1;
-      emit(state.copyWith(
-        currentQuestionIndex: newIndex,
-        currentQuestion: state.questions[newIndex],
-      ));
+      emit(
+        state.copyWith(
+          currentQuestionIndex: newIndex,
+          currentQuestion: state.questions[newIndex],
+        ),
+      );
     }
   }
 
   Future<void> _onMoveToNextQuestion(
-      MoveToNextQuestionEvent event,
-      Emitter<PracticeSpeakingState> emit,
+    MoveToNextQuestionEvent event,
+    Emitter<PracticeSpeakingState> emit,
   ) async {
     if (state.currentQuestionIndex < state.questions.length - 1) {
       final newIndex = state.currentQuestionIndex + 1;
-      emit(state.copyWith(
-        currentQuestionIndex: newIndex,
-        currentQuestion: state.questions[newIndex],
-      ));
+      emit(
+        state.copyWith(
+          currentQuestionIndex: newIndex,
+          currentQuestion: state.questions[newIndex],
+        ),
+      );
     }
   }
-
 
   @override
   Future<void> close() {

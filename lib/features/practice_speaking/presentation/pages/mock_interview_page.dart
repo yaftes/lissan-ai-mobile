@@ -4,8 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/pages/end_page.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/widgets/circle_avatar_widget.dart';
-
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
@@ -23,7 +21,7 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
   int _currentPage = 1;
   final int _maxPage = 5;
   late FlutterTts flutterTts;
-  String selectedMode = 'mock'; // <-- make it mutable
+  String selectedMode = 'mock';
 
   @override
   void initState() {
@@ -103,9 +101,6 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 16),
-                  const Center(child: CircleAvatarWidget(radius: 100, padd: 8)),
-                  const SizedBox(height: 16),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

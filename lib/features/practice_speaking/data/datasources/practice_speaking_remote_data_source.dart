@@ -14,18 +14,10 @@ import 'package:lissan_ai/features/practice_speaking/domain/entities/practice_se
 import 'package:lissan_ai/features/practice_speaking/domain/entities/user_answer.dart';
 
 abstract class PracticeSpeakingRemoteDataSource {
-  Future<InterviewQuestion> getInterviewQuestion(
-    String sessionId,
-  );
-  Future<AnswerFeedback> answerAndGetFeedback(
-    UserAnswer answer,
-  );
-  Future<PracticeSessionStart> startPracticeSession(
-    String type,
-  );
-  Future<PracticeSessionResult> endPracticeSession(
-    String sessionId,
-  );
+  Future<InterviewQuestion> getInterviewQuestion(String sessionId);
+  Future<AnswerFeedback> answerAndGetFeedback(UserAnswer answer);
+  Future<PracticeSessionStart> startPracticeSession(String type);
+  Future<PracticeSessionResult> endPracticeSession(String sessionId);
 }
 
 class PracticeSpeakingRemoteDataSourceImpl
@@ -33,11 +25,11 @@ class PracticeSpeakingRemoteDataSourceImpl
   final ApiClientHelper apiClientHelper;
   PracticeSpeakingRemoteDataSourceImpl({required this.apiClientHelper});
   @override
-  Future<PracticeSessionResult> endPracticeSession(
-    String sessionId,
-  ) async {
+  Future<PracticeSessionResult> endPracticeSession(String sessionId) async {
     final Map<String, String> body = {'session_id': sessionId};
-    final response = await apiClientHelper.post(PracticeSpeakingConstants.endSession(sessionId), body
+    final response = await apiClientHelper.post(
+      PracticeSpeakingConstants.endSession(sessionId),
+      body,
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -48,42 +40,43 @@ class PracticeSpeakingRemoteDataSourceImpl
   }
 
   @override
-  Future<InterviewQuestion> getInterviewQuestion(
-    String sessionId,
-  ) async {
-    final response = await apiClientHelper.get(PracticeSpeakingConstants.getQuestion(sessionId));
+  Future<InterviewQuestion> getInterviewQuestion(String sessionId) async {
+    final response = await apiClientHelper.get(
+      PracticeSpeakingConstants.getQuestion(sessionId),
+    );
     if (response.statusCode == 200 || response.statusCode == 201) {
       final decoded = json.decode(response.body);
       final Map<String, dynamic> data = decoded;
       return InterviewQuestionModel.fromJson(data);
     } else {
-      throw 
-        ServerFailure(message: 'error on get interview ${response.statusCode}');
+      throw ServerFailure(
+        message: 'error on get interview ${response.statusCode}',
+      );
     }
   }
 
   @override
-  Future<PracticeSessionStart> startPracticeSession(
-    String type,
-  ) async {
+  Future<PracticeSessionStart> startPracticeSession(String type) async {
     final Map<String, String> body = {'type': type};
     final response = await apiClientHelper.post(
       PracticeSpeakingConstants.startSession,
       body,
     );
+    print(response.body);
+    print(response.statusCode);
     if (response.statusCode == 200 || response.statusCode == 201) {
       final decoded = json.decode(response.body);
       final Map<String, dynamic> data = decoded;
       return PracticeSessionStartModel.fromJson(data);
     } else {
-      throw ServerFailure(message: 'error on start session ${response.statusCode}');
+      throw ServerFailure(
+        message: 'error on start session ${response.statusCode}',
+      );
     }
   }
 
   @override
-  Future<AnswerFeedback> answerAndGetFeedback(
-    UserAnswer answer,
-  ) async {
+  Future<AnswerFeedback> answerAndGetFeedback(UserAnswer answer) async {
     final Map<String, dynamic> body = {
       'session_id': answer.sessionId,
       'answer': answer.transcript,

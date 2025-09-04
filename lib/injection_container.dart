@@ -25,6 +25,17 @@ import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_draf
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_improve_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lissan_ai/core/utils/helper/api_client_helper.dart';
+import 'package:lissan_ai/features/practice_speaking/data/datasources/practice_speaking_remote_data_source.dart';
+import 'package:lissan_ai/features/practice_speaking/data/repositories/practice_speaking_repositories_impl.dart';
+import 'package:lissan_ai/features/practice_speaking/data/services/speech_to_text_service.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/repositories/practice_speaking_repository.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/end_pracice_session_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/get_interview_questions_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/recognize_speech.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/start_practice_session_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/domain/usecases/submit_answer_and_get_feedback_usecase.dart';
+import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -61,14 +72,15 @@ Future<void> init() async {
     ),
   );
 
-
   // ----------------------
   // Network info
   // ----------------------
   getIt.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImpl(connection: getIt<InternetConnection>()),
   );
-
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(client: getIt(), localDataSource: getIt()),
+  );
   // ----------------------
   // Auth repository (registered as interface, not impl)
   // ----------------------
@@ -164,4 +176,72 @@ Future<void> init() async {
       improveEmailUsecase: getIt<EmailImproveUsecase>(),
     ),
   );
+
+  // -------------------------------
+  // BLoC Practice Speaking
+  // -------------------------------
+  getIt.registerFactory<PracticeSpeakingBloc>(
+    () => PracticeSpeakingBloc(
+      startPracticeSessionUsecase: getIt<StartPracticeSessionUsecase>(),
+      endPracticeSessionUsecase: getIt<EndPraciceSessionUsecase>(),
+      getInterviewQuestionsUsecase: getIt<GetInterviewQuestionsUsecase>(),
+      submitAndGetAnswerUsecase: getIt<SubmitAnswerAndGetFeedbackUsecase>(),
+      recognizeSpeech: getIt<RecognizeSpeechUsecase>(),
+    ),
+  );
+
+  // -------------------------------
+  // Use cases
+  // -------------------------------
+  getIt.registerLazySingleton<StartPracticeSessionUsecase>(
+    () => StartPracticeSessionUsecase(
+      repository: getIt<PracticeSpeakingRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<EndPraciceSessionUsecase>(
+    () => EndPraciceSessionUsecase(
+      repository: getIt<PracticeSpeakingRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetInterviewQuestionsUsecase>(
+    () => GetInterviewQuestionsUsecase(
+      repository: getIt<PracticeSpeakingRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<SubmitAnswerAndGetFeedbackUsecase>(
+    () => SubmitAnswerAndGetFeedbackUsecase(
+      repository: getIt<PracticeSpeakingRepository>(),
+    ),
+  );
+  getIt.registerLazySingleton<RecognizeSpeechUsecase>(
+    () => RecognizeSpeechUsecase(service: getIt()),
+  );
+
+  // -------------------------------
+  // Repository
+  // -------------------------------
+  getIt.registerLazySingleton<PracticeSpeakingRepository>(
+    () => PracticeSpeakingRepositoriesImpl(
+      networkInfo: getIt(),
+      remoteDataSource: getIt(),
+    ),
+  );
+
+  // -------------------------------
+  // Services
+  // -------------------------------
+  getIt.registerLazySingleton<SpeechToTextService>(() => SpeechToTextService());
+
+  getIt.registerLazySingleton(
+    () => ApiClientHelper(
+      client: getIt(),
+      storage: getIt<FlutterSecureStorage>(),
+    ),
+  );
+  getIt.registerLazySingleton<PracticeSpeakingRemoteDataSource>(
+    () => PracticeSpeakingRemoteDataSourceImpl(apiClientHelper: getIt()),
+  );
+
+  // initialize service
+  await getIt<SpeechToTextService>().init();
 }
