@@ -65,10 +65,10 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               const GetInterviewQuestionsEvent(),
             );
           }
-          if (state.currentQuestion != null &&
-              state.status == BlocStatus.questionsLoaded) {
-            _speak(state.currentQuestion!.question);
-          }
+          // if (state.currentQuestion != null &&
+          //     state.status == BlocStatus.questionsLoaded) {
+          //   _speak(state.currentQuestion!.question);
+          // }
           if (state.status == BlocStatus.sessionEnded &&
               state.endSessionFeedback != null) {
             Navigator.of(context).push(

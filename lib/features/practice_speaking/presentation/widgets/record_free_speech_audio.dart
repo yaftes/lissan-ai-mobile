@@ -37,7 +37,7 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   double _currentVolume = 0.0;
   Timer? _aiAnimationTimer;
   final Random _random = Random();
-  static const double _silenceThresholdDb = -20.0;
+  static const double _silenceThresholdDb = -10.0;
   static const Duration _maxSessionDuration = Duration(minutes: 3);
 
   bool _isSessionActive = false;
@@ -80,38 +80,42 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     });
   }
 
+  // --- NEW: Method to start the entire conversation session ---
   void _startSession() {
     if (_isSessionActive) return;
-    _log('--- SESSION STARTED ---');
+    _log("--- SESSION STARTED ---");
     setState(() {
       _isSessionActive = true;
     });
 
     _sessionTimer = Timer(_maxSessionDuration, () {
-      _log('--- SESSION TIMEOUT: 3 minutes reached ---');
+      _log("--- SESSION TIMEOUT: 3 minutes reached ---");
       _endSession(timeout: true);
     });
 
+    // Start the very first turn
     _startRecording();
   }
 
+  // --- NEW: Method to end the entire conversation session ---
   void _endSession({bool timeout = false}) {
     if (!_isSessionActive) return;
-    _log('--- SESSION ENDED ---');
-
+    _log("--- SESSION ENDED ---");
+    
     _sessionTimer?.cancel();
     _sessionTimer = null;
-
+    
+    // Make sure we stop recording if the user ends the session while speaking
     if (_isRecording) {
       _stopRecording();
     }
-
+    
     setState(() {
       _isSessionActive = false;
       if (timeout) {
-        _statusText = 'Session ended (3 min timeout)';
+        _statusText = "Session ended (3 min timeout)";
       } else {
-        _statusText = 'Session Ended';
+        _statusText = "Session Ended";
       }
       _currentState = ConversationState.connected;
     });
@@ -161,11 +165,9 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   }
 
   Future<void> _playAudio(Uint8List audioBytes) async {
-    _setStatus('AI Speaking...', ConversationState.speaking);
+    _setStatus("AI Speaking...", ConversationState.speaking);
     _aiAnimationTimer?.cancel();
-    _aiAnimationTimer = Timer.periodic(const Duration(milliseconds: 100), (
-      timer,
-    ) {
+    _aiAnimationTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
@@ -178,28 +180,28 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     try {
       await _audioPlayer.setAudioSource(BytesAudioSource(audioBytes));
       _audioPlayer.play();
-      _log('Playing AI audio from memory...');
+      _log("Playing AI audio from memory...");
 
       _audioPlayer.playerStateStream.listen((playerState) {
         if (playerState.processingState == ProcessingState.completed) {
           _aiAnimationTimer?.cancel();
           _audioPlayer.stop();
 
+          // --- KEY CHANGE HERE ---
+          // After AI finishes, check if the session should continue.
           if (_isSessionActive) {
-            _log('AI finished, starting next turn automatically.');
-            _startRecording();
+            _log("AI finished, starting next turn automatically.");
+            _startRecording(); // This creates the loop
           } else {
-            _log(
-              'AI finished, but session is now inactive. Returning to idle.',
-            );
-            _setStatus('Session Ended', ConversationState.connected);
+            _log("AI finished, but session is now inactive. Returning to idle.");
+            _setStatus("Session Ended", ConversationState.connected);
           }
         }
       });
     } catch (e) {
-      _log('Error playing audio: $e');
+      _log("Error playing audio: $e");
       _aiAnimationTimer?.cancel();
-      _setStatus('Audio Error', ConversationState.connected);
+      _setStatus("Audio Error", ConversationState.connected);
     }
   }
 
@@ -266,7 +268,8 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   }
 
   void _stopRecording() {
-    _log('Attempting to stop recording TURN...');
+    // Note: This only stops a single TURN, not the whole session.
+    _log("Attempting to stop recording TURN...");
     if (!_isRecording) {
       return;
     }
@@ -277,10 +280,11 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     _silenceTimer?.cancel();
     _silenceTimer = null;
 
-    if (_isSessionActive) {
-      _setStatus('Processing...', ConversationState.processing);
+    // Set status to "Processing..." while waiting for AI, but only if the session is still active
+    if(_isSessionActive) {
+      _setStatus("Processing...", ConversationState.processing);
     }
-    _log('✅ Stopped listening TURN.');
+    _log("✅ Stopped listening TURN.");
   }
 
   void _sendEndOfSpeechSignal() {
@@ -328,23 +332,50 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
         ),
         const SizedBox(height: 64),
 
-        AnimatedAudioBlob(
-          state: _currentState,
-          volume: _currentVolume,
-          onTap: () {
-            if (_currentState == ConversationState.connected ||
-                _currentState == ConversationState.idle) {
-              if (_channel == null) {
-                _initializeWebSocket();
+        // Show the blob and End button ONLY when a session is active
+        if (_isSessionActive) ...[
+          AnimatedAudioBlob(
+            state: _currentState,
+            volume: _currentVolume,
+            onTap: () {
+              // The blob's only job during a session is to manually end a turn
+              if (_currentState == ConversationState.listening) {
+                _sendEndOfSpeechSignal(); 
               }
-              _startRecording();
-            } else if (_currentState == ConversationState.listening) {
-              _sendEndOfSpeechSignal();
-            }
-          },
-        ),
-
-        const SizedBox(height: 20),
+            },
+          ),
+          const SizedBox(height: 40),
+          ElevatedButton.icon(
+            onPressed: _endSession,
+            icon: const Icon(Icons.stop_circle_outlined),
+            label: const Text("End Session"),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red[700]),
+          ),
+        ] 
+        // Show the Start button ONLY when no session is active
+        else ...[
+          // Using a simple button to start. You could also use the blob.
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: ElevatedButton(
+              onPressed: _startSession,
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                padding: const EdgeInsets.all(20),
+                backgroundColor: Colors.blue,
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.play_arrow, size: 60),
+                  Text("Start"),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 96), // Space to keep layout consistent
+        ],
       ],
     );
   }
