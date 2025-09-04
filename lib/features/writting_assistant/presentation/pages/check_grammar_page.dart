@@ -20,6 +20,8 @@ class CheckGrammarPage extends StatefulWidget {
     this.onAutoCheckDone,
   });
 
+  
+
   @override
   State<CheckGrammarPage> createState() => _CheckGrammarPageState();
 }

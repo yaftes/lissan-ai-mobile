@@ -20,6 +20,8 @@ import 'package:lissan_ai/features/writting_assistant/data/repositories/email_re
 import 'package:lissan_ai/features/writting_assistant/data/repositories/grammar_repository_impl.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/repositories/email_repository.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/repositories/grammar_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/pronunciation_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/sentence_repository.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/check_grammar_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_draft_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/email_improve_usecase.dart';
