@@ -9,9 +9,14 @@ class GrammarRepositoryImpl implements GrammarRepository {
   final GrammarRemoteDataSources remoteDataSources;
   final NetworkInfo networkInfo;
 
-  GrammarRepositoryImpl({required this.remoteDataSources, required this.networkInfo});
+  GrammarRepositoryImpl({
+    required this.remoteDataSources,
+    required this.networkInfo,
+  });
   @override
-  Future<Either<Failure, GrammarResult>> checkGrammar(String englishText) async{
+  Future<Either<Failure, GrammarResult>> checkGrammar(
+    String englishText,
+  ) async {
     if (await networkInfo.isConnected) {
       try {
         final grammarResult = await remoteDataSources.checkGrammar(englishText);

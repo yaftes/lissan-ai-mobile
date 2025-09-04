@@ -7,11 +7,13 @@ class CustomTextField extends StatefulWidget {
   final IconData icon;
   final String hintText;
   final bool obscure;
+  final bool enabled;
   const CustomTextField({
     required this.controller,
     required this.title,
     required this.icon,
     required this.hintText,
+    required this.enabled,
     this.obscure = false,
     super.key,
   });
@@ -41,6 +43,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         const SizedBox(height: 10),
         TextFormField(
+          keyboardType: widget.title == 'Email'
+              ? TextInputType.emailAddress
+              : null,
+          enabled: widget.enabled,
           obscureText: _obscureText,
           controller: widget.controller,
           decoration: InputDecoration(
@@ -83,6 +89,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
           validator: (value) {
             if (value == null || value.isEmpty) {
               return '${widget.title} is required';
+            }
+            if (widget.title == 'Password' && value.length < 6) {
+              return 'Password must be at least 6 characters';
+            }
+            if (widget.title == 'Email' &&
+                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+              return 'Please enter a valid email';
             }
             return null;
           },

@@ -59,10 +59,9 @@ class _PracticeExamplePageState extends State<PracticeExamplePage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Input box
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0xFFF9F9F9),
@@ -123,7 +122,6 @@ class _PracticeExamplePageState extends State<PracticeExamplePage> {
                               );
                               if (value != null &&
                                   (value.text?.isNotEmpty ?? false)) {
-                                // append pasted text and update cursor
                                 final newText =
                                     _controller.text + (value.text ?? '');
                                 setState(() {
