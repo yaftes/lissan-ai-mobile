@@ -282,110 +282,150 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
               const SizedBox(height: 24),
 
               // Generated Email Output
-              BlocBuilder<WrittingBloc, WrittingState>(
-                builder: (context, state) {
-                  if (state is WrittingInitial) {
-                    return const SizedBox();
-                  } else if (state is EmailDraftError) {
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.red),
-                      ),
-                      child: Text(
-                        state.message,
-                        style: const TextStyle(color: Colors.red),
-                      ),
+              BlocListener<WrittingBloc, WrittingState>(
+                listener: (context, state) {
+                  if (state is EmailDraftSaved) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('✅ Email draft saved')),
                     );
-                  } else if (state is EmailDraftLoaded) {
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: BoxBorder.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 6,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              state.emailDraft.subject,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[100],
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            child: Text(
-                              state.emailDraft.body,
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Copy Button (full width)
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: state.emailDraft.body),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      '✅ Email copied to clipboard!',
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(Icons.copy),
-                              label: const Text('Copy Email'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF009688),
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  } else if (state is EmailDraftError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('❌ ${state.message}')),
                     );
                   }
-                  return const SizedBox();
                 },
+                child: BlocBuilder<WrittingBloc, WrittingState>(
+                  builder: (context, state) {
+                    if (state is WrittingInitial) {
+                      return const SizedBox();
+                    } else if (state is EmailDraftError) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red),
+                        ),
+                        child: Text(
+                          state.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    } else if (state is EmailDraftLoaded) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 6,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                state.emailDraft.subject,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey),
+                              ),
+                              child: Text(
+                                state.emailDraft.body,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Copy Button (full width)
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: state.emailDraft.body),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        '✅ Email copied to clipboard!',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.copy),
+                                label: const Text('Copy Email'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF009688),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            
+                            const SizedBox(height: 12),
+
+                            // Save Button (full width)
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  context.read<WrittingBloc>().add(
+                                    SaveEmailDraftEvent(
+                                      subject: state.emailDraft.subject,
+                                      body: state.emailDraft.body,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.bookmark_add),
+                                label: const Text('Save Email'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF112D4F),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                ),
               ),
             ],
           );

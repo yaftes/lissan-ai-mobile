@@ -38,6 +38,13 @@ import 'package:lissan_ai/features/practice_speaking/domain/usecases/recognize_s
 import 'package:lissan_ai/features/practice_speaking/domain/usecases/start_practice_session_usecase.dart';
 import 'package:lissan_ai/features/practice_speaking/domain/usecases/submit_answer_and_get_feedback_usecase.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/bloc/practice_speaking_bloc.dart';
+import 'package:lissan_ai/features/writting_assistant/data/datasources/saved_email_local_data_source.dart';
+import 'package:lissan_ai/features/writting_assistant/data/repositories/saved_email_repository_impl.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/repositories/saved_email_repository.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/save_email_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/get_saved_emails_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/delete_saved_email_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/presentation/bloc/saved_email_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -176,6 +183,31 @@ Future<void> init() async {
       getEmailDraftUsecase: getIt<EmailDraftUsecase>(),
       checkGrammarUsecase: getIt<CheckGrammarUsecase>(),
       improveEmailUsecase: getIt<EmailImproveUsecase>(),
+      saveEmailUsecase: getIt<SaveEmailUsecase>(),
+    ),
+  );
+
+  // ----------------------
+  // Saved Email Dependencies
+  // ----------------------
+  getIt.registerLazySingleton<SavedEmailLocalDataSource>(
+    () => SavedEmailLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
+
+  getIt.registerLazySingleton<SavedEmailRepository>(
+    () => SavedEmailRepositoryImpl(localDataSource: getIt()),
+  );
+
+  getIt.registerLazySingleton(() => SaveEmailUsecase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetSavedEmailsUsecase(repository: getIt()));
+  getIt.registerLazySingleton(() => DeleteSavedEmailUsecase(repository: getIt()));
+
+  // Add SavedEmailBloc registration:
+  getIt.registerFactory(
+    () => SavedEmailBloc(
+      saveEmailUsecase: getIt(),
+      getSavedEmailsUsecase: getIt(),
+      deleteSavedEmailUsecase: getIt(),
     ),
   );
 
