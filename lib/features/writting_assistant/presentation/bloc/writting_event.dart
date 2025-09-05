@@ -28,7 +28,6 @@ class ImproveEmailEvent extends WrittingEvent {
   List<Object> get props => [userEmail, tone, type];
 }
 
-
 // save email
 class SaveEmailDraftEvent extends WrittingEvent {
   final String subject;

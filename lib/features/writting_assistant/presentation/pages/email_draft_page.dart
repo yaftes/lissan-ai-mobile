@@ -20,7 +20,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
   String selectedTone = 'Formal';
   final tones = const ['Formal', 'Polite', 'Friendly'];
 
-  String selectedType = 'Job Application';
+  String ? selectedType;
   final types = const [
     'Job Application',
     'Application Follow-up',
@@ -67,7 +67,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         hintText:
-                            'Enter your text here  እባክዎ እዚህ ጽሁፍዎን ያስገቡ...',
+                            'Describe your email in Amharic - ኢሜይልዎን በአማርኛ ይግለጹ, we’ll generate it',
                         hintStyle: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 15,
@@ -124,7 +124,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
 
               // Email Type
               const Text(
-                'Email Type',
+                'Email Type(optional)',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xff112d4f),
@@ -248,7 +248,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                                   GenerateEmailDraft(
                                     _controller.text,
                                     selectedTone,
-                                    selectedType,
+                                    selectedType ?? '',
                                   ),
                                 );
                               }

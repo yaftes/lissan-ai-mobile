@@ -73,7 +73,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText:
-                                'Paste your email here  እባክዎ እዚህ ጽሁፍዎን ያስገቡ...',
+                                'Paste your draft email here, we’ll help polish it ',
                             hintStyle: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 16,
