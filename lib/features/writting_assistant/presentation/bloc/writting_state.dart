@@ -65,3 +65,9 @@ class ImproveEmailError extends WrittingState {
   @override
   List<Object> get props => [message];
 }
+
+
+// save email
+class EmailDraftSaved extends WrittingState {}
+
+class ImprovedEmailSaved extends WrittingState {}

@@ -27,3 +27,19 @@ class ImproveEmailEvent extends WrittingEvent {
   @override
   List<Object> get props => [userEmail, tone, type];
 }
+
+
+// save email
+class SaveEmailDraftEvent extends WrittingEvent {
+  final String subject;
+  final String body;
+
+  SaveEmailDraftEvent({required this.subject, required this.body});
+}
+
+class SaveImprovedEmailEvent extends WrittingEvent {
+  final String subject;
+  final String body;
+
+  SaveImprovedEmailEvent({required this.subject, required this.body});
+}
