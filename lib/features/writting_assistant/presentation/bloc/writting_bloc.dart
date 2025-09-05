@@ -78,6 +78,10 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     SaveEmailDraftEvent event,
     Emitter<WrittingState> emit,
   ) async {
+    // Get current draft state to preserve it
+    final currentState = state;
+    if (currentState is! EmailDraftLoaded) return;
+
     final savedEmail = SavedEmail(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       subject: event.subject,
@@ -87,7 +91,7 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     final result = await saveEmailUsecase(savedEmail);
     result.fold(
       (failure) => emit(EmailDraftError(message: failure.message)),
-      (success) => emit(EmailDraftSaved()),
+      (success) => emit(EmailDraftSaved(emailDraft: currentState.emailDraft)),
     );
   }
 
@@ -95,6 +99,10 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     SaveImprovedEmailEvent event,
     Emitter<WrittingState> emit,
   ) async {
+    // Get current improve state to preserve it
+    final currentState = state;
+    if (currentState is! ImproveEmailLoaded) return;
+
     final savedEmail = SavedEmail(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       subject: event.subject,
@@ -104,7 +112,8 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     final result = await saveEmailUsecase(savedEmail);
     result.fold(
       (failure) => emit(ImproveEmailError(message: failure.message)),
-      (success) => emit(ImprovedEmailSaved()),
+      (success) =>
+          emit(ImprovedEmailSaved(improvedEmail: currentState.improvedEmail)),
     );
   }
 }

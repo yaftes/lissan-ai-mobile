@@ -20,7 +20,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
   String selectedTone = 'Formal';
   final tones = const ['Formal', 'Polite', 'Friendly'];
 
-  String ? selectedType;
+  String? selectedType;
   final types = const [
     'Job Application',
     'Application Follow-up',
@@ -311,7 +311,12 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                           style: const TextStyle(color: Colors.red),
                         ),
                       );
-                    } else if (state is EmailDraftLoaded) {
+                    } else if (state is EmailDraftLoaded ||
+                        state is EmailDraftSaved) {
+                      final emailDraft = state is EmailDraftLoaded
+                          ? state.emailDraft
+                          : (state as EmailDraftSaved).emailDraft;
+
                       return Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -329,6 +334,15 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const Text(
+                              'Generated Email',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(12),
@@ -337,7 +351,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
-                                state.emailDraft.subject,
+                                emailDraft.subject,
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -352,23 +366,21 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                               decoration: BoxDecoration(
                                 color: Colors.grey[100],
                                 borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: Colors.grey),
                               ),
                               child: Text(
-                                state.emailDraft.body,
+                                emailDraft.body,
                                 style: const TextStyle(fontSize: 14),
                               ),
                             ),
 
                             const SizedBox(height: 16),
 
-                            // Copy Button (full width)
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 onPressed: () {
                                   Clipboard.setData(
-                                    ClipboardData(text: state.emailDraft.body),
+                                    ClipboardData(text: emailDraft.body),
                                   );
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -392,7 +404,7 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                                 ),
                               ),
                             ),
-                            
+
                             const SizedBox(height: 12),
 
                             // Save Button (full width)
@@ -402,8 +414,8 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                                 onPressed: () {
                                   context.read<WrittingBloc>().add(
                                     SaveEmailDraftEvent(
-                                      subject: state.emailDraft.subject,
-                                      body: state.emailDraft.body,
+                                      subject: emailDraft.subject,
+                                      body: emailDraft.body,
                                     ),
                                   );
                                 },
@@ -415,7 +427,9 @@ class _EmailDraftPageState extends State<EmailDraftPage> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
                                 ),
                               ),
                             ),

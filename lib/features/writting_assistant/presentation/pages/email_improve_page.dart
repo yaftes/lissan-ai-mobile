@@ -384,7 +384,12 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                             style: const TextStyle(color: Colors.red),
                           ),
                         );
-                      } else if (state is ImproveEmailLoaded) {
+                      } else if (state is ImproveEmailLoaded ||
+                          state is ImprovedEmailSaved) {
+                        final improvedEmail = state is ImproveEmailLoaded
+                            ? state.improvedEmail
+                            : (state as ImprovedEmailSaved).improvedEmail;
+
                         return Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -418,7 +423,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  state.improvedEmail.subject,
+                                  improvedEmail.subject,
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -435,7 +440,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  state.improvedEmail.improvedBody,
+                                  improvedEmail.improvedBody,
                                   style: const TextStyle(fontSize: 14),
                                 ),
                               ),
@@ -449,7 +454,7 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   onPressed: () {
                                     Clipboard.setData(
                                       ClipboardData(
-                                        text: state.improvedEmail.improvedBody,
+                                        text: improvedEmail.improvedBody,
                                       ),
                                     );
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -483,8 +488,8 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                   onPressed: () {
                                     context.read<WrittingBloc>().add(
                                       SaveImprovedEmailEvent(
-                                        subject: state.improvedEmail.subject,
-                                        body: state.improvedEmail.improvedBody,
+                                        subject: improvedEmail.subject,
+                                        body: improvedEmail.improvedBody,
                                       ),
                                     );
                                   },
