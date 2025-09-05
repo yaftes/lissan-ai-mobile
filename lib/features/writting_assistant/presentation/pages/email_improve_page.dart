@@ -451,6 +451,34 @@ class _EmailImprovePageState extends State<EmailImprovePage> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 12),
+
+                            // Save Button (full width)
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  context.read<WrittingBloc>().add(
+                                    SaveImprovedEmailEvent(
+                                      subject: state.improvedEmail.subject,
+                                      body: state.improvedEmail.improvedBody,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.bookmark_add),
+                                label: const Text('Save Email'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF112D4F),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       );
