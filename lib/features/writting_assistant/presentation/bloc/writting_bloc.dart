@@ -9,6 +9,8 @@ import 'package:lissan_ai/features/writting_assistant/domain/usecases/get_senten
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/send_pronunciation_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_event.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_state.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/save_email_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/entities/saved_email.dart';
 
 class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
   final CheckGrammarUsecase checkGrammarUsecase;
@@ -16,6 +18,7 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
   final EmailImproveUsecase improveEmailUsecase;
   final GetSentenceUsecase getSentenceUsecase;
   final SendPronunciationUsecase sendPronunciationUsecase;
+  final SaveEmailUsecase saveEmailUsecase;
 
   WrittingBloc({
     required this.checkGrammarUsecase,
@@ -23,6 +26,7 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     required this.improveEmailUsecase,
     required this.getSentenceUsecase,
     required this.sendPronunciationUsecase,
+    required this.saveEmailUsecase,
   }) : super(WrittingInitial()) {
     on<CheckGrammarEvent>(_onCheckGrammerEvent);
     on<GenerateEmailDraft>(_onGenerateEmailDraft);
@@ -52,6 +56,8 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
         ),
       );
     });
+    on<SaveEmailDraftEvent>(_onSaveEmailDraft);
+    on<SaveImprovedEmailEvent>(_onSaveImprovedEmail);
   }
 
   void _onCheckGrammerEvent(
@@ -98,6 +104,49 @@ class WrittingBloc extends Bloc<WrittingEvent, WrittingState> {
     result.fold(
       (failure) => emit(ImproveEmailError(message: failure.message)),
       (success) => emit(ImproveEmailLoaded(improvedEmail: success)),
+    );
+  }
+
+  void _onSaveEmailDraft(
+    SaveEmailDraftEvent event,
+    Emitter<WrittingState> emit,
+  ) async {
+    // Get current draft state to preserve it
+    final currentState = state;
+    if (currentState is! EmailDraftLoaded) return;
+
+    final savedEmail = SavedEmail(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      subject: event.subject,
+      body: event.body,
+    );
+
+    final result = await saveEmailUsecase(savedEmail);
+    result.fold(
+      (failure) => emit(EmailDraftError(message: failure.message)),
+      (success) => emit(EmailDraftSaved(emailDraft: currentState.emailDraft)),
+    );
+  }
+
+  void _onSaveImprovedEmail(
+    SaveImprovedEmailEvent event,
+    Emitter<WrittingState> emit,
+  ) async {
+    // Get current improve state to preserve it
+    final currentState = state;
+    if (currentState is! ImproveEmailLoaded) return;
+
+    final savedEmail = SavedEmail(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      subject: event.subject,
+      body: event.body,
+    );
+
+    final result = await saveEmailUsecase(savedEmail);
+    result.fold(
+      (failure) => emit(ImproveEmailError(message: failure.message)),
+      (success) =>
+          emit(ImprovedEmailSaved(improvedEmail: currentState.improvedEmail)),
     );
   }
 }
