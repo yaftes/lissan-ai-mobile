@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:lissan_ai/core/network/bloc/connectivity_bloc.dart';
 import 'package:lissan_ai/core/network/network_info.dart';
+import 'package:lissan_ai/core/utils/helper/api_client_helper.dart';
 import 'package:lissan_ai/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:lissan_ai/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:lissan_ai/features/auth/data/repositories/auth_repository_impl.dart';
@@ -33,7 +34,6 @@ import 'package:lissan_ai/features/writting_assistant/domain/usecases/get_senten
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/send_pronunciation_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/writting_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lissan_ai/core/utils/helpers/api_client_helper.dart';
 import 'package:lissan_ai/features/practice_speaking/data/datasources/practice_speaking_remote_data_source.dart';
 import 'package:lissan_ai/features/practice_speaking/data/repositories/practice_speaking_repositories_impl.dart';
 import 'package:lissan_ai/features/practice_speaking/data/services/speech_to_text_service.dart';
