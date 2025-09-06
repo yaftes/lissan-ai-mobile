@@ -44,28 +44,32 @@ class _EmailTabViewState extends State<EmailTabView> {
             ],
           ),
           actions: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.bookmark, color: Color(0xFF112D4F)),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider(
-                          create: (_) => getIt<SavedEmailBloc>(),
-                          child: const SavedEmailsPage(),
-                        ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12, bottom: 6),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BlocProvider(
+                        create: (_) => getIt<SavedEmailBloc>(),
+                        child: const SavedEmailsPage(),
                       ),
-                    );
-                  },
+                    ),
+                  );
+                },
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bookmark_outline, color: Color(0xFF112D4F)),
+                    SizedBox(height: 2),
+                    Text(
+                      'Saved',
+                      style: TextStyle(fontSize: 10, color: Color(0xFF112D4F)),
+                    ),
+                  ],
                 ),
-                const Text(
-                  'Saved',
-                  style: TextStyle(fontSize: 10, color: Color(0xFF112D4F)),
-                ),
-              ],
+              ),
             ),
           ],
         ),
