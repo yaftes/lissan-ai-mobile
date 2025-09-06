@@ -6,6 +6,7 @@ abstract class SavedEmailLocalDataSource {
   Future<void> saveEmail(SavedEmailModel email);
   Future<List<SavedEmailModel>> getSavedEmails();
   Future<void> deleteSavedEmail(String id);
+  Future<void> clearAllEmails();
 }
 
 class SavedEmailLocalDataSourceImpl implements SavedEmailLocalDataSource {
@@ -51,5 +52,10 @@ class SavedEmailLocalDataSourceImpl implements SavedEmailLocalDataSource {
         .toList();
 
     await sharedPreferences.setStringList(_savedEmailsKey, emailsJson);
+  }
+
+  @override
+  Future<void> clearAllEmails() async {
+    await sharedPreferences.remove(_savedEmailsKey);
   }
 }

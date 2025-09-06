@@ -25,11 +25,12 @@ class SavedEmailRepositoryImpl implements SavedEmailRepository {
   @override
   Future<Either<Failure, List<SavedEmail>>> getSavedEmails() async {
     try {
-      final List<SavedEmailModel> emailModels = await localDataSource.getSavedEmails();
+      final List<SavedEmailModel> emailModels = await localDataSource
+          .getSavedEmails();
       final List<SavedEmail> emails = emailModels.cast<SavedEmail>();
       return Right(emails);
     } catch (e) {
-      return Left(CacheFailure(message: 'Failed to load saved emails'));  
+      return Left(CacheFailure(message: 'Failed to load saved emails'));
     }
   }
 
@@ -42,7 +43,14 @@ class SavedEmailRepositoryImpl implements SavedEmailRepository {
       return Left(CacheFailure(message: 'Failed to delete email'));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> clearAllEmails() async {
+    try {
+      await localDataSource.clearAllEmails();
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure(message: 'Failed to clear all emails'));
+    }
+  }
 }
-
-
-

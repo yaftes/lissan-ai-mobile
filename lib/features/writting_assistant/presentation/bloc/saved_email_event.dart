@@ -15,3 +15,5 @@ class DeleteSavedEmailEvent extends SavedEmailEvent {
 
   DeleteSavedEmailEvent({required this.id});
 }
+
+class ClearAllEmailsEvent extends SavedEmailEvent {}

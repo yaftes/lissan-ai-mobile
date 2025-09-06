@@ -16,6 +16,8 @@ class SavedEmailsLoaded extends SavedEmailState {
 
 class SavedEmailDeleted extends SavedEmailState {}
 
+class AllEmailsCleared extends SavedEmailState {}
+
 class SavedEmailError extends SavedEmailState {
   final String message;
 

@@ -44,6 +44,7 @@ import 'package:lissan_ai/features/writting_assistant/domain/repositories/saved_
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/save_email_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/get_saved_emails_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/domain/usecases/delete_saved_email_usecase.dart';
+import 'package:lissan_ai/features/writting_assistant/domain/usecases/clear_all_emails_usecase.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/bloc/saved_email_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
@@ -200,7 +201,10 @@ Future<void> init() async {
 
   getIt.registerLazySingleton(() => SaveEmailUsecase(repository: getIt()));
   getIt.registerLazySingleton(() => GetSavedEmailsUsecase(repository: getIt()));
-  getIt.registerLazySingleton(() => DeleteSavedEmailUsecase(repository: getIt()));
+  getIt.registerLazySingleton(
+    () => DeleteSavedEmailUsecase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(() => ClearAllEmailsUsecase(repository: getIt()));
 
   // Add SavedEmailBloc registration:
   getIt.registerFactory(
@@ -208,6 +212,7 @@ Future<void> init() async {
       saveEmailUsecase: getIt(),
       getSavedEmailsUsecase: getIt(),
       deleteSavedEmailUsecase: getIt(),
+      clearAllEmailsUsecase: getIt(),
     ),
   );
 

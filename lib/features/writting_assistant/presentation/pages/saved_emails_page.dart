@@ -12,11 +12,7 @@ class SavedEmailsPage extends StatefulWidget {
   State<SavedEmailsPage> createState() => _SavedEmailsPageState();
 }
 
-
-
-
 class _SavedEmailsPageState extends State<SavedEmailsPage> {
-
   @override
   void initState() {
     super.initState();
@@ -42,12 +38,35 @@ class _SavedEmailsPageState extends State<SavedEmailsPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF112D4F)),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          BlocBuilder<SavedEmailBloc, SavedEmailState>(
+            builder: (context, state) {
+              if (state is SavedEmailsLoaded && state.emails.isNotEmpty) {
+                return IconButton(
+                  icon: const Icon(Icons.clear_all, color: Color(0xFF112D4F)),
+                  onPressed: () => _showClearAllDialog(context),
+                  tooltip: 'Clear All',
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
       body: BlocListener<SavedEmailBloc, SavedEmailState>(
         listener: (context, state) {
           if (state is SavedEmailDeleted) {
             // Automatically reload the list after successful deletion
             context.read<SavedEmailBloc>().add(LoadSavedEmailsEvent());
+          } else if (state is AllEmailsCleared) {
+            // Automatically reload the list after clearing all emails
+            context.read<SavedEmailBloc>().add(LoadSavedEmailsEvent());
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('✅ All emails cleared successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
           }
         },
         child: BlocBuilder<SavedEmailBloc, SavedEmailState>(
@@ -188,7 +207,6 @@ class _SavedEmailsPageState extends State<SavedEmailsPage> {
     );
   }
 
-
   void _showDeleteDialog(BuildContext pageContext, String id) {
     showDialog(
       context: pageContext,
@@ -209,6 +227,30 @@ class _SavedEmailsPageState extends State<SavedEmailsPage> {
               );
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showClearAllDialog(BuildContext pageContext) {
+    showDialog(
+      context: pageContext,
+      useRootNavigator: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Clear All Emails'),
+        content: const Text('Are you sure you want to clear all emails?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              pageContext.read<SavedEmailBloc>().add(ClearAllEmailsEvent());
+            },
+            child: const Text('Clear All', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
