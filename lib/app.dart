@@ -6,7 +6,6 @@ import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart'
 import 'package:lissan_ai/features/auth/presentation/pages/profile_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
-import 'package:lissan_ai/features/practice_speaking/presentation/pages/mock_interview_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_tab_view.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/grammar_tab_view.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/pronounciation_page.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         '/email-draft': (context) => const EmailTabView(),
         '/check-grammar': (context) => const GrammarTabView(),
         '/user-profile': (context) => const UserProfilePage(),
-        'pronuncation': (context) => const PronounciationPage(),
+        '/pronuncation': (context) => const PronounciationPage(),
       },
       initialRoute: '/',
     );
