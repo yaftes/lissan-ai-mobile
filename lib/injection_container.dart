@@ -10,6 +10,7 @@ import 'package:lissan_ai/features/auth/data/datasources/auth_remote_datasource.
 import 'package:lissan_ai/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lissan_ai/features/auth/domain/repositories/auth_repository.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/get_token_usecase.dart';
+import 'package:lissan_ai/features/auth/domain/usecases/get_user_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/sign_in_with_token_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/sign_out_usecase.dart';
@@ -126,6 +127,9 @@ Future<void> init() async {
   getIt.registerFactory(
     () => GetTokenUsecase(repository: getIt<AuthRepository>()),
   );
+  getIt.registerFactory(
+    () => GetUserUsecase(repository: getIt<AuthRepository>()),
+  );
 
   // ----------------------
   // Auth bloc
@@ -137,6 +141,7 @@ Future<void> init() async {
       signUpUsecase: getIt<SignUpUsecase>(),
       getTokenUsecase: getIt<GetTokenUsecase>(),
       signInWithTokenUsecase: getIt<SignInWithTokenUsecase>(),
+      getUserUsecase: getIt<GetUserUsecase>(),
     ),
   );
 

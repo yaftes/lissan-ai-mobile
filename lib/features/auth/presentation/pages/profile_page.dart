@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lissan_ai/features/auth/domain/entities/user.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
 
 const Color kPrimaryColor = Color(0xFF112D4F);
 const Color kCardBackgroundColor = Color(0xFFFFFFFF);
@@ -41,7 +46,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     'Dec',
   ];
 
-  // Dummy activity data: [year][month][day]
+  // Dummy activity data
   final Map<int, List<List<int>>> activityPerYear = {};
 
   @override
@@ -51,11 +56,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
       activityPerYear[year] = List.generate(
         12,
         (month) => List.generate(
-          DateTime(year, month + 1, 0).day, // days in month
+          DateTime(year, month + 1, 0).day,
           (day) => (day * 3 + month) % 5,
         ),
       );
     }
+    // ✅ Dispatch event to load user info
+    context.read<AuthBloc>().add(GetUserEvent());
   }
 
   @override
@@ -63,30 +70,45 @@ class _UserProfilePageState extends State<UserProfilePage> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(kDefaultPadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildProfileHeader(),
-              const SizedBox(height: 10),
-              _buildStatsRow(),
-              const SizedBox(height: kDefaultPadding),
-              _buildActivityHeatmapCard(),
-              const SizedBox(height: kDefaultPadding),
-              _buildQuickStatsSection(),
-              const SizedBox(height: kDefaultPadding),
-              _buildLearningFocusSection(),
-              const SizedBox(height: kDefaultPadding),
-            ],
-          ),
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthLoadingState) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is AuthErrorState) {
+              return Center(child: Text(state.message));
+            } else if (state is UserInfoState) {
+              final user = state.user;
+              return _buildProfileContent(user);
+            }
+            return const Center(child: Text('No user data'));
+          },
         ),
       ),
     );
   }
 
+  Widget _buildProfileContent(User user) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(kDefaultPadding),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfileHeader(user),
+          const SizedBox(height: 10),
+          _buildStatsRow(),
+          const SizedBox(height: kDefaultPadding),
+          _buildActivityHeatmapCard(),
+          const SizedBox(height: kDefaultPadding),
+          _buildQuickStatsSection(),
+          const SizedBox(height: kDefaultPadding),
+          _buildLearningFocusSection(),
+        ],
+      ),
+    );
+  }
+
   // ================= Profile Header =================
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(User user) {
     return SizedBox(
       height: 140,
       child: Stack(
@@ -134,55 +156,25 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                 ),
                 const SizedBox(width: kMediumPadding),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hana Johnson',
-                        style: TextStyle(
+                        user.name ?? '',
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                       Text(
-                        'English Language Learner',
-                        style: TextStyle(
+                        user.email ?? '',
+                        style: const TextStyle(
                           fontSize: 15,
                           color: Colors.white,
                           fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      SizedBox(height: kSmallPadding / 2),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Addis Abeba, AA',
-                            style: TextStyle(fontSize: 13, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.school_outlined,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Intermediate Level',
-                            style: TextStyle(fontSize: 13, color: Colors.white),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -422,11 +414,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
+  // ================= Activity Heatmap =================
   Widget _buildActivityHeatmapCard() {
     final yearData = activityPerYear[selectedYear]!;
     final allDays = <DateTime, int>{};
 
-    // Flatten yearData into [date -> activity level]
     for (int month = 0; month < 12; month++) {
       for (int day = 0; day < yearData[month].length; day++) {
         final date = DateTime(selectedYear, month + 1, day + 1);
@@ -439,7 +431,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final firstDay = DateTime(selectedYear, 1, 1);
     final lastDay = DateTime(selectedYear, 12, 31);
 
-    // Build week-based structure
     final weeks = <List<DateTime?>>[];
     DateTime currentDay = firstDay;
     List<DateTime?> currentWeek = List.filled(7, null);
@@ -457,13 +448,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
       weeks.add(currentWeek);
     }
 
-    // Determine which week column should have a month label
     final monthLabels = List<String?>.filled(weeks.length, null);
     for (int i = 0; i < weeks.length; i++) {
       for (var day in weeks[i]) {
         if (day != null && day.day == 1) {
           final name = _monthAbbrev(day.month);
-          monthLabels[i] = name; // e.g., "Jan"
+          monthLabels[i] = name;
           break;
         }
       }
@@ -513,13 +503,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
           const SizedBox(height: 12),
 
-          // Heatmap with month labels
+          // Heatmap
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Month labels row (2 letters on top row)
+                // Month labels row
                 Row(
                   children: List.generate(weeks.length, (i) {
                     final label = monthLabels[i];
@@ -528,7 +518,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       alignment: Alignment.center,
                       child: label != null
                           ? Text(
-                              label.substring(0, 2), // "Ja" from "Jan"
+                              label.substring(0, 2),
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: kLightTextColor,
@@ -539,7 +529,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     );
                   }),
                 ),
-                // Month labels second row (last char)
+                // Second row
                 Row(
                   children: List.generate(weeks.length, (i) {
                     final label = monthLabels[i];
@@ -548,9 +538,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       alignment: Alignment.center,
                       child: label != null
                           ? Text(
-                              label.substring(
-                                label.length - 1,
-                              ), // "n" from "Jan"
+                              label.substring(label.length - 1),
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: kLightTextColor,
@@ -563,11 +551,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ),
                 const SizedBox(height: 4),
 
-                // Heatmap grid (with weekday labels on the left)
+                // Heatmap grid
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Weekday labels (Mon, Wed, Fri only)
+                    // Weekday labels
                     Column(
                       children: List.generate(7, (i) {
                         if (i == DateTime.monday % 7 ||
@@ -638,21 +626,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  // Helper for month abbreviations
   String _monthAbbrev(int month) {
     const names = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return names[month - 1];
   }

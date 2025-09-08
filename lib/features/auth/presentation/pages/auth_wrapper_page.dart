@@ -63,7 +63,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
               const Icon(Icons.error_outline, color: Colors.red, size: 50),
               const SizedBox(height: 15),
               Text(
-                "Authentication Error",
+                'Authentication Error',
                 style: GoogleFonts.inter(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -95,7 +95,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
                   ),
                 ),
                 child: const Text(
-                  "Dismiss",
+                  'Dismiss',
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -121,7 +121,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
       builder: (context, state) {
         if (state is UnAuthenticatedState) {
           return const SignInPage();
-        } else if (state is AuthenticatedState) {
+        } else if (state is AuthenticatedState || state is UserInfoState) {
           return const NavigationPage();
         } else if (state is AuthLoadingState) {
           return const Scaffold(
@@ -131,7 +131,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
             ),
           );
         } else {
-          // default: loading
+          // default: spinner while loading unknown states
           return const Scaffold(
             backgroundColor: Colors.white,
             body: Center(
