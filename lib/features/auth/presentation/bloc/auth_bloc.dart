@@ -36,10 +36,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoadingState());
       final user = User(email: event.email, password: event.password);
       final result = await signInUsecase(user);
-      result.fold(
-        (failure) => emit(AuthErrorState(message: failure.message)),
-        (success) => emit(AuthenticatedState(success)),
-      );
+
+      result.fold((failure) async {
+        emit(AuthErrorState(message: failure.message));
+        emit(UnAuthenticatedState());
+      }, (success) => emit(AuthenticatedState(success)));
     });
 
     on<SignInWithTokenEvent>((event, emit) async {
@@ -59,10 +60,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         name: event.name,
       );
       final result = await signUpUsecase(user);
-      result.fold(
-        (failure) => emit(AuthErrorState(message: failure.message)),
-        (success) => emit(AuthenticatedState(success)),
-      );
+
+      result.fold((failure) async {
+        emit(AuthErrorState(message: failure.message));
+        emit(UnAuthenticatedState());
+      }, (success) => emit(AuthenticatedState(success)));
     });
 
     on<SignOutEvent>((event, emit) async {
