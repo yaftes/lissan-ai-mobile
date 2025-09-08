@@ -58,10 +58,7 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocBuilder<ConnectivityBloc, ConnectivityState>(
-        builder: (context, state) {
-          if (state is ConnectivityConnected) {
-            return SingleChildScrollView(
+      body: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -133,23 +130,8 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
                   ],
                 ),
               ),
-            );
-          } else {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.wifi_off, color: Color(0xFF112D4F), size: 180),
-                  Text(
-                    'Please check your internet connection',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
+      )
+          
     );
   }
 

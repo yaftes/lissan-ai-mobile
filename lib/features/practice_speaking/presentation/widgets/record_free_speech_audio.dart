@@ -36,7 +36,7 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
   double _currentVolume = 0.0;
   Timer? _aiAnimationTimer;
   final Random _random = Random();
-  static const double _silenceThresholdDb = -10.0;
+  static const double _silenceThresholdDb = -20.0;
   static const Duration _maxSessionDuration = Duration(minutes: 3);
 
   bool _isSessionActive = false;
@@ -169,7 +169,6 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     }
   }
 
-// ... inside _RecordFreeSpeechAudioState class
 
   Future<void> _playAudio(Uint8List audioBytes) async {
     _setStatus('AI Speaking...', ConversationState.speaking);
