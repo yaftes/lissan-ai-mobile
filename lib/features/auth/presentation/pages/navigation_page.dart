@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/dashboard_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/profile_page.dart';
+import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/pages/mock_interview_page.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/email_tab_view.dart';
 import 'package:lissan_ai/features/writting_assistant/presentation/pages/grammar_tab_view.dart';

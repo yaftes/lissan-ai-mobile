@@ -26,8 +26,6 @@ class CheckGrammarPage extends StatefulWidget {
 class _CheckGrammarPageState extends State<CheckGrammarPage> {
   final TextEditingController _controller = TextEditingController();
   int _charCount = 0;
-
-  /// language toggle: true = English, false = Amharic
   bool _showEnglish = true;
 
   @override
@@ -98,7 +96,6 @@ class _CheckGrammarPageState extends State<CheckGrammarPage> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   ChoiceChip(
-                                    backgroundColor: Colors.deepOrange,
                                     label: const Text('English'),
                                     selected: _showEnglish,
                                     onSelected: (val) {
