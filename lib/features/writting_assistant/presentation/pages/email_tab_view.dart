@@ -44,11 +44,10 @@ class _EmailTabViewState extends State<EmailTabView> {
             ],
           ),
           actions: [
-            Tooltip(
-              message: 'Saved',
-              child: IconButton(
-                icon: const Icon(Icons.bookmark, color: Color(0xFF112D4F)),
-                onPressed: () {
+            Padding(
+              padding: const EdgeInsets.only(right: 12, bottom: 6),
+              child: InkWell(
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -59,6 +58,17 @@ class _EmailTabViewState extends State<EmailTabView> {
                     ),
                   );
                 },
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bookmark_outline, color: Color(0xFF112D4F)),
+                    SizedBox(height: 2),
+                    Text(
+                      'Saved',
+                      style: TextStyle(fontSize: 10, color: Color(0xFF112D4F)),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
