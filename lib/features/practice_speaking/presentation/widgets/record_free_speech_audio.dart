@@ -169,6 +169,8 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
     }
   }
 
+// ... inside _RecordFreeSpeechAudioState class
+
   Future<void> _playAudio(Uint8List audioBytes) async {
     _setStatus('AI Speaking...', ConversationState.speaking);
     _aiAnimationTimer?.cancel();
@@ -193,12 +195,9 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
         if (playerState.processingState == ProcessingState.completed) {
           _aiAnimationTimer?.cancel();
 
-          
-          
-          
           if (_isSessionActive) {
-            _log('AI finished, waiting for user to tap mic.');
-            _setStatus('Tap to Speak', ConversationState.connected);
+            _log('AI finished speaking. Automatically starting to listen for user.');
+            _startRecording();
           } else {
             _log('AI finished, session is inactive.');
             _setStatus('Session Ended', ConversationState.idle);
@@ -209,11 +208,10 @@ class _RecordFreeSpeechAudioState extends State<RecordFreeSpeechAudio> {
       _log('Error playing audio: $e');
       _aiAnimationTimer?.cancel();
       if (_isSessionActive) {
-        _setStatus('Audio Error', ConversationState.connected);
+        _startRecording();
       }
     }
   }
-
   
 
   Future<void> _startRecording() async {
