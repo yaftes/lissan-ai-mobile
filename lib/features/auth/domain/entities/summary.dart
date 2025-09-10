@@ -1,7 +1,7 @@
 import 'package:lissan_ai/features/auth/domain/entities/activity_breakdown.dart';
 
 class Summary {
-  ActivityBreakdown? activity_breakdown;
+  ActivityBreakDown? activity_breakdown;
   int? consecutive_weeks;
   int? most_active_count;
   String? most_active_day;
