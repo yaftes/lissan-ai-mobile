@@ -109,7 +109,6 @@ class _SignInPageState extends State<SignInPage> {
               return const NavigationPage();
             }
             final isLoading = authState is AuthLoadingState;
-
             return GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(

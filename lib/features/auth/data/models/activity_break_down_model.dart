@@ -21,9 +21,9 @@ class ActivityBreakDownModel extends ActivityBreakDown {
 
   Map<String, dynamic> toJson() {
     return {
-      "additionalProp1": additionalProp1,
-      "additionalProp2": additionalProp2,
-      "additionalProp3": additionalProp3,
+      'additionalProp1': additionalProp1,
+      'additionalProp2': additionalProp2,
+      'additionalProp3': additionalProp3,
     };
   }
 }

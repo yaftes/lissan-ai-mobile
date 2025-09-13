@@ -37,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     setState(() {
       if (confirm.isNotEmpty && confirm != password) {
-        confirmPasswordError = "Passwords do not match";
+        confirmPasswordError = 'Passwords do not match';
       } else {
         confirmPasswordError = null;
       }
@@ -259,7 +259,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 if (!termsAccepted) {
                                   _showErrorBottomSheet(
                                     context,
-                                    "You must accept the Terms and Privacy Policy",
+                                    'You must accept the Terms and Privacy Policy',
                                   );
                                   return;
                                 }

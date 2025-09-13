@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class Day {
   int? activity_count;
   List<String>? activity_types;

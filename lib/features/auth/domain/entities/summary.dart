@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:lissan_ai/features/auth/domain/entities/activity_breakdown.dart';
 
 class Summary {
