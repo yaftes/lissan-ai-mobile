@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:lissan_ai/features/auth/domain/entities/summary.dart';
 import 'package:lissan_ai/features/auth/domain/entities/week.dart';
 
