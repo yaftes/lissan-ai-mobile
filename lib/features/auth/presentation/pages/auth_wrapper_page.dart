@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
+import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/navigation_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
-import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 

@@ -8,7 +8,6 @@ import 'package:lissan_ai/features/practice_speaking/presentation/widgets/conver
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/question_card.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_button.dart';
 import 'package:lissan_ai/features/practice_speaking/presentation/widgets/navigation_buttons.dart';
-// import 'package:lissan_ai/features/practice_speaking/presentation/widgets/record_free_speech_audio.dart';
 import 'package:shimmer/shimmer.dart';
 
 class MockInterviewPage extends StatefulWidget {
@@ -68,7 +67,10 @@ class _MockInterviewPageState extends State<MockInterviewPage> {
               state.endSessionFeedback != null) {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => EndPage(feedback: state.endSessionFeedback!, currentPage: _currentPage,),
+                builder: (_) => EndPage(
+                  feedback: state.endSessionFeedback!,
+                  currentPage: _currentPage,
+                ),
               ),
             );
           }

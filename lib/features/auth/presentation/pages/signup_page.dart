@@ -128,9 +128,16 @@ class _SignUpPageState extends State<SignUpPage> {
           listener: (context, authState) {
             if (authState is AuthenticatedState) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Signup Successful')),
+                const SnackBar(
+                  content: Center(
+                    child: Text(
+                      'Signup Successful',
+                      style: TextStyle(color: Colors.greenAccent),
+                    ),
+                  ),
+                ),
               );
-              Navigator.pushReplacementNamed(context, '/home');
+              Navigator.pushReplacementNamed(context, '/sign-in');
             } else if (authState is AuthErrorState) {
               _showErrorBottomSheet(context, authState.message);
             }

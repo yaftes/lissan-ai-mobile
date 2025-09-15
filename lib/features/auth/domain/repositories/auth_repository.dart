@@ -10,5 +10,3 @@ abstract class AuthRepository {
   Future<Either<Failure, User>> getUser();
   Future<bool> isTokenValid();
 }
-
-abstract class StreakRepository {}

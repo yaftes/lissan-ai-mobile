@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
-import 'package:lissan_ai/features/auth/presentation/pages/navigation_page.dart';
 import 'package:lissan_ai/features/auth/presentation/widgets/custom_text_field.dart';
 
 class SignInPage extends StatefulWidget {
@@ -106,7 +105,7 @@ class _SignInPageState extends State<SignInPage> {
           },
           builder: (context, authState) {
             if (authState is AuthenticatedState) {
-              return const NavigationPage();
+              Navigator.pushReplacementNamed(context, '/navigation');
             }
             final isLoading = authState is AuthLoadingState;
             return GestureDetector(
