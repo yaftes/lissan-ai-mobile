@@ -1,12 +1,23 @@
 // ignore_for_file: non_constant_identifier_names
 
 class StreakInfo {
-  bool? can_freeze;
-  int? current_streak;
-  int? days_until_loss;
-  int? freeze_count;
-  String? last_activity_date;
-  int? longest_streak;
-  int? max_freezes;
-  bool? streak_frozen;
+  final bool? can_freeze;
+  final int? current_streak;
+  final int? days_until_loss;
+  final int? freeze_count;
+  final String? last_activity_date;
+  final int? longest_streak;
+  final int? max_freezes;
+  final bool? streak_frozen;
+
+  const StreakInfo({
+    this.can_freeze,
+    this.current_streak,
+    this.days_until_loss,
+    this.freeze_count,
+    this.last_activity_date,
+    this.longest_streak,
+    this.max_freezes,
+    this.streak_frozen,
+  });
 }
