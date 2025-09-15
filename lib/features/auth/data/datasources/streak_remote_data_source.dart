@@ -1,6 +1,8 @@
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
+import 'package:lissan_ai/core/error/exceptions.dart';
+import 'package:lissan_ai/core/utils/constants/streak_constants.dart';
+import 'package:lissan_ai/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:lissan_ai/features/auth/data/models/streak_calendar_model.dart';
 import 'package:lissan_ai/features/auth/data/models/streak_info_model.dart';
 
@@ -13,43 +15,73 @@ abstract class StreakRemoteDataSource {
 
 class StreakRemoteDataSourceImpl implements StreakRemoteDataSource {
   final http.Client client;
-  final String baseUrl;
+  final AuthLocalDataSource authLocalDataSource;
 
-  StreakRemoteDataSourceImpl({required this.client, required this.baseUrl});
+  StreakRemoteDataSourceImpl({
+    required this.client,
+    required this.authLocalDataSource,
+  });
+
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await authLocalDataSource.getAccessToken();
+    if (token == null) {
+      throw const CacheException(message: 'No access token found');
+    }
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
 
   @override
   Future<void> freezeStreak() async {
-    final response = await client.post(Uri.parse('$baseUrl/streak/freeze'));
+    final headers = await _getHeaders();
+    final response = await client.post(
+      Uri.parse('${StreakConstants.baseUrl}${StreakConstants.freeze}'),
+      headers: headers,
+    );
     if (response.statusCode != 200) {
-      throw Exception('Failed to freeze streak');
+      throw const ServerException(message: 'Failed to freeze streak');
     }
   }
 
   @override
   Future<StreakCalendarModel> getActivityCalendar() async {
-    final response = await client.get(Uri.parse('$baseUrl/streak/calendar'));
+    final headers = await _getHeaders();
+    final response = await client.get(
+      Uri.parse('${StreakConstants.baseUrl}${StreakConstants.calendar}'),
+      headers: headers,
+    );
     if (response.statusCode == 200) {
       return StreakCalendarModel.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load activity calendar');
+      throw const ServerException(message: 'Failed to load activity calendar');
     }
   }
 
   @override
   Future<StreakInfoModel> getStreakInfo() async {
-    final response = await client.get(Uri.parse('$baseUrl/streak/info'));
+    final headers = await _getHeaders();
+    final response = await client.get(
+      Uri.parse('${StreakConstants.baseUrl}${StreakConstants.info}'),
+      headers: headers,
+    );
     if (response.statusCode == 200) {
       return StreakInfoModel.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to load streak info');
+      throw const ServerException(message: 'Failed to load streak info');
     }
   }
 
   @override
   Future<void> recordActivity() async {
-    final response = await client.post(Uri.parse('$baseUrl/streak/activity'));
+    final headers = await _getHeaders();
+    final response = await client.post(
+      Uri.parse('${StreakConstants.baseUrl}${StreakConstants.activity}'),
+      headers: headers,
+    );
     if (response.statusCode != 200) {
-      throw Exception('Failed to record activity');
+      throw const ServerException(message: 'Failed to record activity');
     }
   }
 }
