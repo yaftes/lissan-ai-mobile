@@ -41,15 +41,16 @@ class StreakCalendarModel extends StreakCalendar {
 
   Map<String, dynamic> toJson() {
     return {
-      "active_days": active_days,
-      "current_streak": current_streak,
-      "longest_streak": longest_streak,
-      "summary": (summary as SummaryModel?)?.toJson(),
-      "total_days": total_days,
-      "weeks": weeks != null
+      'active_days': active_days,
+      'current_streak': current_streak,
+      'longest_streak': longest_streak,
+      'summary': (summary as SummaryModel?)?.toJson(),
+      'total_days': total_days,
+      'weeks': weeks != null
           ? weeks!.map((e) => (e as WeekModel).toJson()).toList()
           : null,
-      "year": year,
+      'year': year,
     };
   }
 }
+   // ignore: prefer_null_aware_operators

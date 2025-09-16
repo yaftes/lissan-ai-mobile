@@ -19,7 +19,6 @@ class PracticeSpeakingBloc
   final GetInterviewQuestionsUsecase getInterviewQuestionsUsecase;
   final SubmitAnswerAndGetFeedbackUsecase submitAndGetAnswerUsecase;
   final RecognizeSpeechUsecase recognizeSpeech;
-
   StreamSubscription<String>? _wordsSub;
   StreamSubscription<String>? _errorSub;
 

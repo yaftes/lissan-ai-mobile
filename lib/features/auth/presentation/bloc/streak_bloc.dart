@@ -5,7 +5,6 @@ import 'package:lissan_ai/features/auth/presentation/bloc/streak_state.dart';
 
 class StreakBloc extends Bloc<StreakEvent, StreakState> {
   final StreakRepository repository;
-
   StreakBloc({required this.repository}) : super(StreakInitial()) {
     on<FreezeStreakEvent>(_onFreezeStreak);
     on<GetActivityCalendarEvent>(_onGetCalendar);

@@ -13,6 +13,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -231,6 +232,7 @@ class _SignInPageState extends State<SignInPage> {
                             elevation: 2,
                             shadowColor: const Color(
                               0xFF112D4F,
+                            // ignore: deprecated_member_use
                             ).withOpacity(0.3),
                           ),
                           child: isLoading
