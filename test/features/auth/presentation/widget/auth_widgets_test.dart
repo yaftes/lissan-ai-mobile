@@ -11,7 +11,6 @@ import 'package:lissan_ai/features/auth/domain/usecases/get_token_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/sign_in_with_token_usecase.dart';
 import 'package:lissan_ai/features/auth/domain/usecases/get_user_usecase.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signin_page.dart';
 import 'package:lissan_ai/features/auth/presentation/pages/signup_page.dart';
