@@ -49,10 +49,11 @@ class _GrammarTabViewState extends State<GrammarTabView> {
                 ],
               ),
             ),
-
             body: TabBarView(
               children: [
+                // Force rebuild when _practiceText changes using ValueKey
                 CheckGrammarPage(
+                  key: ValueKey(_practiceText),
                   initialText: _practiceText,
                   autoCheck: _shouldAutoCheck,
                   onAutoCheckDone: () {
@@ -67,8 +68,8 @@ class _GrammarTabViewState extends State<GrammarTabView> {
                     setState(() {
                       _practiceText = text;
                       _shouldAutoCheck = true;
-                      tabController.animateTo(0);
                     });
+                    tabController.animateTo(0); // Switch to grammar tab
                   },
                 ),
               ],
