@@ -17,11 +17,11 @@ This project is built using **Flutter** to deliver a smooth, cross-platform expe
 
 ### Dashboard  
 <img src="screenshots/dashboard.jpg" alt="Dashboard" width="300"/>
-<img src="screenshots/grammar.jpg" alt="Dashboard" width="300"/>
-<img src="screenshots/pronouncation.jpg" alt="Dashboard" width="300"/>
-<img src="screenshots/speaking.jpg" alt="Dashboard" width="300"/>
-<img src="screenshots/splash_screen.jpg" alt="Dashboard" width="300"/>
-<img src="screenshots/user_profile.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/grammar.jpg" alt="Grammar" width="300"/>
+<img src="screenshots/pronouncation.jpg" alt="Pronouncation" width="300"/>
+<img src="screenshots/speaking.jpg" alt="Speaking" width="300"/>
+<img src="screenshots/splash_screen.jpg" alt="Splash Screen" width="300"/>
+<img src="screenshots/user_profile.jpg" alt="User Profile" width="300"/>
 
 
 ## 🛠️ Tech Stack  
