@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lissan_ai/features/auth/domain/entities/user.dart';
+import 'package:lissan_ai/features/auth/domain/entities/streak_info.dart';
+import 'package:lissan_ai/features/auth/domain/entities/streak_calendar.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_event.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/auth_state.dart';
-import 'package:lissan_ai/features/auth/data/models/streak_calendar_model.dart';
-import 'package:lissan_ai/features/auth/data/models/streak_info_model.dart';
-import 'package:lissan_ai/features/auth/data/models/week_model.dart';
-import 'package:lissan_ai/features/auth/data/models/day_model.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/streak_bloc.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/streak_event.dart';
 import 'package:lissan_ai/features/auth/presentation/bloc/streak_state.dart';
@@ -20,23 +18,16 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  int selectedYear = DateTime.now().year;
-  final List<int> years = [
-    DateTime.now().year - 2,
-    DateTime.now().year - 1,
-    DateTime.now().year,
-  ];
-
-  StreakInfoModel? streakInfo;
-  StreakCalendarModel? calendar;
+  StreakInfo? streakInfo;
+  StreakCalendar? calendar;
 
   @override
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(GetUserEvent());
-    final bloc = context.read<StreakBloc>();
-    bloc.add(GetStreakInfoEvent());
-    bloc.add(GetActivityCalendarEvent());
+    final streakBloc = context.read<StreakBloc>();
+    streakBloc.add(GetStreakInfoEvent());
+    streakBloc.add(GetActivityCalendarEvent());
   }
 
   @override
@@ -69,19 +60,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
         children: [
           _buildProfileHeader(user),
           const SizedBox(height: 16),
-          _buildStatsRow(),
-          const SizedBox(height: 16),
           MultiBlocListener(
             listeners: [
               BlocListener<StreakBloc, StreakState>(
                 listener: (context, state) {
                   if (state is StreakInfoLoaded) {
-                    setState(
-                      () => streakInfo = state.streakInfo as StreakInfoModel,
-                    );
+                    setState(() => streakInfo = state.streakInfo);
                   } else if (state is ActivityCalendarLoaded) {
-                    setState(
-                      () => calendar = state.calendar as StreakCalendarModel,
+                    setState(() => calendar = state.calendar);
+                  } else if (state is StreakFrozen) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Your streak has been frozen!'),
+                      ),
                     );
                   }
                 },
@@ -89,7 +80,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
             ],
             child: Column(
               children: [
-                if (streakInfo != null) _buildStreakInfo(streakInfo!),
+                if (streakInfo != null) _buildStatsRow(streakInfo!),
+                const SizedBox(height: 12),
+                if (streakInfo != null && streakInfo!.can_freeze == true)
+                  _buildFreezeButton(),
                 const SizedBox(height: 16),
                 if (calendar != null) _buildHorizontalHeatmap(calendar!),
               ],
@@ -179,33 +173,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(StreakInfo info) {
     return Row(
       children: [
         _buildStatCard(
-          '7',
           'Day Streak',
-          streakInfo != null ? '${streakInfo!.current_streak ?? 0} days' : '-',
+          '${info.current_streak ?? 0} days',
           valueColor: const Color(0xFFFFA000),
         ),
         const SizedBox(width: 8),
         _buildStatCard(
-          '156',
-          'Hours Practiced',
-          '+8 this week',
+          'Longest Streak',
+          '${info.longest_streak ?? 0} days',
           valueColor: const Color(0xFF00C853),
         ),
         const SizedBox(width: 8),
-        _buildStatCard('28', 'Achievements', '3 new'),
+        _buildStatCard('Freeze Count', '${info.freeze_count ?? 0}'),
       ],
     );
   }
 
   Widget _buildStatCard(
-    String value,
     String label,
-    String detail, {
-    Color valueColor = const Color(0xFF333333),
+    String value, {
+    Color valueColor = Colors.black,
   }) {
     return Expanded(
       child: Container(
@@ -240,55 +231,84 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 color: Color(0xFF6B7280),
               ),
             ),
-            const SizedBox(height: 2),
-            Text(detail, style: TextStyle(fontSize: 11, color: valueColor)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildStreakInfo(StreakInfoModel info) {
-    return _buildStatsRow();
+  Widget _buildFreezeButton() {
+    return ElevatedButton.icon(
+      onPressed: () async {
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Freeze Streak'),
+            content: const Text('Are you sure you want to freeze your streak?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Freeze'),
+              ),
+            ],
+          ),
+        );
+        if (confirm == true) {
+          context.read<StreakBloc>().add(FreezeStreakEvent());
+        }
+      },
+      icon: const Icon(Icons.ac_unit),
+      label: const Text('Freeze Streak'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 6, 24, 42),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
   }
 
-  Widget _buildHorizontalHeatmap(StreakCalendarModel calendar) {
+  Widget _buildHorizontalHeatmap(StreakCalendar calendar) {
     if (calendar.weeks == null || calendar.weeks!.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final weeks = calendar.weeks!
-        .map(
-          (week) =>
-              (week as WeekModel).days!.map((e) => e as DayModel).toList(),
-        )
-        .toList();
-
+    final weeks = calendar.weeks!;
+    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final monthLabels = <String>[];
+    int? lastMonth;
     for (var week in weeks) {
-      if (week.isNotEmpty) {
-        final month = DateTime.parse(week[0].date!).month;
-        final monthName = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ][month - 1];
-        monthLabels.add(monthName);
+      if (week.days != null && week.days!.isNotEmpty) {
+        final month = DateTime.parse(week.days!.first.date!).month;
+        if (month != lastMonth) {
+          lastMonth = month;
+          monthLabels.add(
+            [
+              'Jan',
+              'Feb',
+              'Mar',
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ][month - 1],
+          );
+        } else {
+          monthLabels.add('');
+        }
       } else {
         monthLabels.add('');
       }
     }
-
-    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -309,15 +329,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
           Row(
             children: [
               const SizedBox(width: 40),
-              ...monthLabels.map(
-                (month) => SizedBox(
-                  width: 16 * 7,
-                  child: Text(
-                    month,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: monthLabels
+                        .map(
+                          (month) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 2),
+                            child: Text(
+                              month,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ),
@@ -345,28 +374,34 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     .toList(),
               ),
               const SizedBox(width: 4),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: weeks.map((week) {
-                    return Column(
-                      children: List.generate(7, (i) {
-                        final day = i < week.length ? week[i] : null;
-                        final color = day != null && (day.has_activity ?? false)
-                            ? Colors.green.shade500
-                            : Colors.grey.shade300;
-                        return Container(
-                          width: 14,
-                          height: 14,
-                          margin: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: color,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                        );
-                      }),
-                    );
-                  }).toList(),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: weeks.map((week) {
+                      return Column(
+                        children: List.generate(7, (i) {
+                          final day =
+                              (week.days != null && i < week.days!.length)
+                              ? week.days![i]
+                              : null;
+                          final color =
+                              day != null && (day.has_activity ?? false)
+                              ? Colors.green.shade500
+                              : Colors.grey.shade300;
+                          return Container(
+                            width: 14,
+                            height: 14,
+                            margin: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(3),
+                            ),
+                          );
+                        }),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ],

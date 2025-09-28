@@ -13,6 +13,17 @@ This project is built using **Flutter** to deliver a smooth, cross-platform expe
 
 ---
 
+## 📸 Screenshots  
+
+### Dashboard  
+<img src="screenshots/dashboard.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/grammar.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/pronouncation.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/speaking.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/splash_screen.jpg" alt="Dashboard" width="300"/>
+<img src="screenshots/user_profile.jpg" alt="Dashboard" width="300"/>
+
+
 ## 🛠️ Tech Stack  
 - **Flutter** (Dart)  
 - **State Management**: [e.g., Riverpod / Bloc / Provider]  
